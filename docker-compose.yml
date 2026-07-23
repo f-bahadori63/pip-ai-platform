@@ -1,40 +1,59 @@
+
 services:
 
   postgres:
     image: postgres:16
     container_name: pip-postgres
-    restart: always
+    restart: unless-stopped
+
     environment:
       POSTGRES_USER: pip_user
       POSTGRES_PASSWORD: pip_password
       POSTGRES_DB: pip_db
+
     ports:
       - "5432:5432"
+
     volumes:
-      - pip_postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pip-pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pip.local
-      PGADMIN_DEFAULT_PASSWORD: admin_password
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-
+    networks:
+      - pip-network
 
   redis:
     image: redis:7
     container_name: pip-redis
-    restart: always
+    restart: unless-stopped
+
     ports:
       - "6379:6379"
 
+    networks:
+      - pip-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pip-pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pip.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+
+    ports:
+      - "5050:80"
+
+    depends_on:
+      - postgres
+
+    networks:
+      - pip-network
 
 volumes:
 
-  pip_postgres_data:
+  postgres_data:
+
+networks:
+
+  pip-network:
+    driver: bridge
