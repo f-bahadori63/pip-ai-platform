@@ -1,0 +1,40 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: pip-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: pip_user
+      POSTGRES_PASSWORD: pip_password
+      POSTGRES_DB: pip_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pip_postgres_data:/var/lib/postgresql/data
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pip-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pip.local
+      PGADMIN_DEFAULT_PASSWORD: admin_password
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+
+  redis:
+    image: redis:7
+    container_name: pip-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+
+volumes:
+
+  pip_postgres_data:
