@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Float
 from datetime import datetime
 
 from app.database.base import Base
@@ -14,28 +14,55 @@ class Project(Base):
         index=True
     )
 
-    name = Column(
-        String,
-        nullable=False
-    )
-
-    code = Column(
-        String,
+    project_code = Column(
+        String(50),
         unique=True,
+        nullable=False,
         index=True
     )
 
-    description = Column(
-        String,
+    name = Column(
+        String(200),
+        nullable=False
+    )
+
+    client = Column(
+        String(200),
+        nullable=True
+    )
+
+    contract_value = Column(
+        Float,
+        nullable=True
+    )
+
+    currency = Column(
+        String(20),
+        default="IRR"
+    )
+
+    start_date = Column(
+        DateTime,
+        nullable=True
+    )
+
+    end_date = Column(
+        DateTime,
         nullable=True
     )
 
     status = Column(
-        String,
+        String(50),
         default="Planning"
     )
 
     created_at = Column(
         DateTime,
         default=datetime.utcnow
+    )
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
     )
