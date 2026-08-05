@@ -1,7 +1,7 @@
 from app.database.connection import engine
 from app.database.base import Base
 
-from app.models.project import Project
+from app.models import Project, WBSItem, Contract
 
 
 def init_database():

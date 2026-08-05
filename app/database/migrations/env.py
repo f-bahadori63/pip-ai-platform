@@ -1,5 +1,5 @@
 from app.database.base import Base
-from app.models.project import Project
+from app.models import Project, WBSItem, Contract
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config

@@ -1,68 +1,34 @@
 from sqlalchemy import Column, Integer, String, DateTime, Float
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 from app.database.base import Base
 
 
 class Project(Base):
-
     __tablename__ = "projects"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True
-    )
+    id = Column(Integer, primary_key=True, index=True)
 
-    project_code = Column(
-        String(50),
-        unique=True,
-        nullable=False,
-        index=True
-    )
+    project_code = Column(String(50), unique=True, nullable=False, index=True)
+    name = Column(String(200), nullable=False)
+    client = Column(String(200), nullable=True)
+    contract_value = Column(Float, nullable=True)
+    currency = Column(String(20), default="IRR")
+    start_date = Column(DateTime, nullable=True)
+    end_date = Column(DateTime, nullable=True)
+    status = Column(String(50), default="Planning")
 
-    name = Column(
-        String(200),
-        nullable=False
-    )
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    client = Column(
-        String(200),
-        nullable=True
+    wbs_items = relationship(
+        "WBSItem",
+        back_populates="project",
+        cascade="all, delete-orphan"
     )
-
-    contract_value = Column(
-        Float,
-        nullable=True
-    )
-
-    currency = Column(
-        String(20),
-        default="IRR"
-    )
-
-    start_date = Column(
-        DateTime,
-        nullable=True
-    )
-
-    end_date = Column(
-        DateTime,
-        nullable=True
-    )
-
-    status = Column(
-        String(50),
-        default="Planning"
-    )
-
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow
-    )
-
-    updated_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
+    contracts = relationship(
+        "Contract",
+        back_populates="project",
+        cascade="all, delete-orphan"
     )

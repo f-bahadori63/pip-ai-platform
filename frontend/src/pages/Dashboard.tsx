@@ -30,14 +30,17 @@ export default function Dashboard() {
 const [projects, setProjects] = useState<Project[]>([]);
 
 useEffect(() => {
-api
-.get("/projects/")
-.then((res) => {
-setProjects(res.data);
-})
-.catch((err) => {
-console.error(err);
-});
+  console.log("Dashboard mounted");
+
+  api
+    .get("/projects/")
+    .then((res) => {
+      console.log("SUCCESS:", res.data);
+      setProjects(res.data);
+    })
+    .catch((err) => {
+      console.error("ERROR:", err);
+    });
 }, []);
 
 const activeProjects = projects.filter(
