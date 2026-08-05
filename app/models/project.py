@@ -18,7 +18,11 @@ class Project(Base):
     start_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
     status = Column(String(50), default="Planning")
-
+    risks = relationship(
+        "Risk",
+        back_populates="project",
+        cascade="all, delete-orphan"
+    )
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

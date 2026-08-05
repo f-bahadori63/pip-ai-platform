@@ -2,32 +2,21 @@
 
 from app.models.project import Project
 from app.models.wbs import WBSItem
-from app.models.contract import Contract
-
+from app.models.risk import Risk
 from app.services.ai.ollama_client import generate
 
 
 def build_project_summary(db: Session, project_id: int) -> dict:
-
-    project = (
-        db.query(Project)
-        .filter(Project.id == project_id)
-        .first()
-    )
+    project = db.query(Project).filter(Project.id == project_id).first()
 
     if not project:
         return {"error": "Project not found"}
 
+    # WBS
     wbs_items = (
         db.query(WBSItem)
         .filter(WBSItem.project_id == project_id)
         .all()
-    )
-
-    contract = (
-        db.query(Contract)
-        .filter(Contract.project_id == project_id)
-        .first()
     )
 
     wbs_text = "\n".join(
@@ -35,62 +24,47 @@ def build_project_summary(db: Session, project_id: int) -> dict:
         for item in wbs_items
     )
 
-    contract_text = "قراردادی ثبت نشده است."
+    # Risks
+    risks = (
+        db.query(Risk)
+        .filter(Risk.project_id == project_id)
+        .order_by(Risk.score.desc())
+        .all()
+    )
 
-    if contract:
-        contract_text = f"""
-شماره قرارداد: {contract.contract_number}
-کارفرما: {contract.client}
-پیمانکار: {contract.contractor}
-نوع قرارداد: {contract.contract_type}
-مبلغ قرارداد: {contract.contract_value} {contract.currency}
-تاریخ شروع: {contract.start_date}
-تاریخ پایان: {contract.end_date}
-شرح قرارداد: {contract.description}
-"""
+    risk_text = "\n".join(
+        f"- {r.risk_code} | {r.title} | Score={r.score} | Status={r.status}"
+        for r in risks
+    )
 
     prompt = f"""
-شما دستیار هوشمند مدیریت پروژه PIP هستید.
+شما دستیار مدیریت پروژه PIP و متخصص پروژه‌های EPC نفت، گاز، پتروشیمی و فولاد هستید.
 
 اطلاعات پروژه:
 
-کد پروژه:
-{project.project_code}
-
-نام پروژه:
-{project.name}
-
-وضعیت پروژه:
-{project.status}
-
-
-اطلاعات قرارداد:
-
-{contract_text}
-
+کد پروژه: {project.project_code}
+نام پروژه: {project.name}
+کارفرما: {project.client}
+وضعیت: {project.status}
 
 ساختار WBS:
 
-{wbs_text if wbs_text else "هیچ WBS ثبت نشده است."}
+{wbs_text if wbs_text else 'هیچ آیتمی ثبت نشده است.'}
 
+ریسک‌های ثبت‌شده پروژه:
 
-یک گزارش مدیریتی در ۵ بخش ارائه کن:
+{risk_text if risk_text else 'هیچ ریسکی ثبت نشده است.'}
 
-1- خلاصه وضعیت فعلی پروژه
-2- تحلیل قرارداد و اثر آن بر اجرا:
-- بررسی نوع قرارداد (EPC، Lump Sum، Cost Plus و ...)
-- بررسی مبلغ و ارز قرارداد
-- بررسی مدت قرارداد
-- شناسایی ریسک‌های مالی، ارزی و زمانی
-- بررسی وجود یا عدم وجود بند تعدیل قیمت
-- بررسی اثر شرایط قراردادی بر مدیریت پروژه
-3- وضعیت ساختار شکست کار WBS
-4- مهم‌ترین ریسک‌های پروژه
-5- پیشنهاد اقدام بعدی مدیر پروژه
+در قالب یک گزارش حرفه‌ای EPC حداکثر در 10 خط موارد زیر را ارائه کن:
 
-پاسخ باید مانند گزارش یک مدیر پروژه ارشد EPC نوشته شود.
-از کلی‌گویی خودداری کن.
-بر اساس داده‌های واقعی پروژه تحلیل ارائه بده.
+1. خلاصه وضعیت فعلی پروژه
+2. وضعیت ساختار WBS
+3. سه ریسک بحرانی پروژه به ترتیب اولویت
+4. اثر احتمالی ریسک‌ها بر زمان و هزینه پروژه
+5. پیشنهاد فوری مدیر پروژه برای کاهش ریسک
+6. سطح سلامت کلی پروژه (Green / Yellow / Red)
+
+پاسخ باید کوتاه، اجرایی و مناسب ارائه به مدیرعامل یا PMO باشد.
 """
 
     ai_response = generate(prompt)
