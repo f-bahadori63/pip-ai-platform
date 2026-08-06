@@ -37,3 +37,4 @@ logs/
 
 # AI temporary data
 .ai/cache/
+infrastructure/offline-packages/
