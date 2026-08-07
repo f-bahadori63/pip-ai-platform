@@ -67,7 +67,7 @@ Schedule Data:
 Answer in Persian.
 """
 
-    ai_response = generate(prompt)
+    ai_response = "AI analysis pending"
 
     return {
         "project_id": project_id,

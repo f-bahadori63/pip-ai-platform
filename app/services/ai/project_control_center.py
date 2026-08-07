@@ -10,21 +10,26 @@ def build_project_control_center(
     project_id: int
 ):
 
+    print("STEP 1: schedule analysis")
+
     schedule_analysis = analyze_project_schedule(
         db,
         project_id
     )
 
+    print("STEP 2: KPI")
 
     kpis = calculate_project_kpis(
         schedule_analysis
     )
 
+    print("STEP 3: ALERTS")
 
     alerts = generate_project_alerts(
         kpis
     )
 
+    print("STEP 4: RECOVERY")
 
     recovery = generate_recovery_plan(
         schedule_analysis.get(
@@ -33,12 +38,15 @@ def build_project_control_center(
         )
     )
 
+    print("STEP 5: REPORT")
 
     executive_report = generate_executive_report(
         schedule_analysis,
         kpis,
         alerts
     )
+
+    print("STEP 6: DONE")
 
 
     return {

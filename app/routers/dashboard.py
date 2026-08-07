@@ -46,26 +46,32 @@ def project_dashboard(
 
 
 
-@router.get(
-    "/executive/{project_id}"
-)
+@router.get("/executive/{project_id}")
 def executive_dashboard(
     project_id: int,
     db: Session = Depends(get_db)
 ):
+
+    print("STEP 1")
 
     control_data = build_project_control_center(
         db,
         project_id
     )
 
+    print("STEP 2 CONTROL CENTER DONE")
 
     dashboard_data = build_dashboard_response(
         project_id,
         control_data
     )
 
+    print("STEP 3 DASHBOARD RESPONSE DONE")
 
-    return map_dashboard_contract(
+    result = map_dashboard_contract(
         dashboard_data.model_dump()
     )
+
+    print("STEP 4 MAPPING DONE")
+
+    return result

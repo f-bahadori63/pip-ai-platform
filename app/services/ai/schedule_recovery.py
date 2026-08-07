@@ -75,8 +75,7 @@ Do not use generic explanations.
 """
 
 
-    ai_response = generate(prompt)
-
+    ai_response = "Recovery plan AI analysis pending"
 
     return {
 
