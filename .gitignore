@@ -38,3 +38,17 @@ logs/
 # AI temporary data
 .ai/cache/
 infrastructure/offline-packages/
+
+# PIP project generated / temporary artifacts
+# PIP project backups / generated exports
+backup_*/
+_backup_*/
+.backup_*/
+_gemini_*/
+_GEMINI_*/
+PIP_GEMINI_*.zip
+PIP_GEMINI_*.md
+*.backup_*
+# Local test artifacts
+test_schedule.xlsx
+frontend/build-errors.txt

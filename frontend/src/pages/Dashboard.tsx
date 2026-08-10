@@ -1,131 +1,196 @@
 ﻿import { useEffect, useState } from "react";
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Chip,
+} from "@mui/material";
+
 import api from "../services/api";
+
 
 export default function Dashboard() {
 
-  const [data, setData] = useState<any>(null);
+  const [dashboard, setDashboard] = useState<any>(null);
   const [error, setError] = useState("");
+
 
   useEffect(() => {
 
-    console.log("Loading dashboard...");
+    console.log("Loading dashboard");
 
-    api
-      .get("/dashboard/executive/1")
-      .then((response) => {
-
-        console.log("DASHBOARD DATA:", response.data);
-
-        setData(response.data);
-
+    api.get("/dashboard/project/1")
+      .then((res) => {
+        console.log("Dashboard Data:", res.data);
+        setDashboard(res.data);
       })
       .catch((err) => {
-
-        console.error("DASHBOARD ERROR:", err);
-
+        console.error(err);
         setError(err.message);
-
       });
 
   }, []);
 
 
   if (error) {
-
     return (
-      <div>
-        Dashboard Error:
-        <br />
-        {error}
-      </div>
+      <Typography color="error">
+        API ERROR: {error}
+      </Typography>
     );
-
   }
 
 
-  if (!data) {
-
+  if (!dashboard) {
     return (
-      <div>
+      <Typography color="white">
         Loading dashboard...
-      </div>
+      </Typography>
     );
-
   }
+
+
+  const cards = [
+    {
+      title: "Project Status",
+      value: dashboard.project_status,
+    },
+    {
+      title: "Progress Variance",
+      value: `${dashboard.progress.variance}%`,
+    },
+    {
+      title: "Schedule Health",
+      value: dashboard.schedule.health,
+    },
+    {
+      title: "Cost Health",
+      value: dashboard.cost.cost_health,
+    },
+  ];
 
 
   return (
 
-    <div>
+    <Box>
 
-      <h1>
-        PIP Executive Dashboard
-      </h1>
-
-
-      <p>
-        Project ID: {data.project_id}
-      </p>
-
-
-      <p>
-        Health: {data.health?.status}
-      </p>
+      <Typography
+        variant="h4"
+        sx={{
+          mb: 4,
+          color: "white",
+          fontWeight: "bold",
+        }}
+      >
+        Project Intelligence Dashboard
+      </Typography>
 
 
-      <p>
-        Planned: {data.progress?.planned}%
-      </p>
+      <Grid container spacing={3}>
+
+        {cards.map((card) => (
+
+          <Grid
+            key={card.title}
+            size={{ xs: 12, md: 3 }}
+          >
+
+            <Paper
+              sx={{
+                p: 3,
+                bgcolor: "#17233a",
+                color: "white",
+              }}
+            >
+
+              <Typography variant="subtitle2">
+                {card.title}
+              </Typography>
+
+              <Typography
+                variant="h5"
+                sx={{
+                  mt: 2,
+                  fontWeight: "bold",
+                }}
+              >
+                {card.value}
+              </Typography>
+
+            </Paper>
+
+          </Grid>
+
+        ))}
 
 
-      <p>
-        Actual: {data.progress?.actual}%
-      </p>
+        <Grid size={{ xs: 12, md: 6 }}>
+
+          <Paper
+            sx={{
+              p: 3,
+              bgcolor: "#17233a",
+              color: "white",
+            }}
+          >
+
+            <Typography variant="h6">
+              AI Alerts
+            </Typography>
 
 
-      <p>
-        Variance: {data.progress?.variance}%
-      </p>
+            {dashboard.alerts.map(
+              (alert:any, index:number)=>(
+
+              <Box key={index} sx={{ mt:2 }}>
+
+                <Chip
+                  label={alert.level}
+                  color="warning"
+                  sx={{ mr:1 }}
+                />
+
+                <Typography component="span">
+                  {alert.title}
+                </Typography>
+
+              </Box>
+
+            ))}
+
+          </Paper>
+
+        </Grid>
 
 
-      <hr />
+        <Grid size={{ xs:12, md:6 }}>
+
+          <Paper
+            sx={{
+              p:3,
+              bgcolor:"#17233a",
+              color:"white",
+            }}
+          >
+
+            <Typography variant="h6">
+              AI Recovery Recommendation
+            </Typography>
 
 
-      <h3>
-        Schedule
-      </h3>
+            <Typography sx={{mt:2}}>
+              {dashboard.recovery.recommendation}
+            </Typography>
 
-      <p>
-        Health: {data.schedule?.health}
-      </p>
+          </Paper>
 
-      <p>
-        Delay Index: {data.schedule?.delay_index}
-      </p>
-
-      <p>
-        Critical Items: {data.schedule?.critical_items}
-      </p>
+        </Grid>
 
 
-      <hr />
+      </Grid>
 
-
-      <h3>
-        Recovery
-      </h3>
-
-      <p>
-        Required: {String(data.recovery?.required)}
-      </p>
-
-      <p>
-        Priority: {data.recovery?.priority}
-      </p>
-
-
-    </div>
+    </Box>
 
   );
-
 }

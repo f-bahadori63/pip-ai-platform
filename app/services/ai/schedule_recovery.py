@@ -18,64 +18,66 @@ def generate_recovery_plan(schedule_data):
         return {
             "recovery_required": False,
             "priority": "NORMAL",
-            "message": "Schedule performance is within acceptable limits."
+            "recommendation": "No recovery action required."
         }
 
 
     prompt = f"""
-You are a Senior EPC Project Controls Manager.
+شما مدیر ارشد کنترل پروژه EPC هستید.
 
-Analyze delayed project schedule activities based on PMBOK Schedule Management principles.
+برای پروژه EPC زیر یک Recovery Plan مدیریتی تهیه کنید.
 
-Project context:
-- Industry: Oil & Gas / EPC
-- Project type: Engineering, Procurement, Construction
-- Role: Project Controls Manager
-
-Delayed activities:
+اطلاعات فعالیت های بحرانی:
 
 {critical_items}
 
 
-Prepare a professional recovery plan in Persian.
+خروجی شامل:
 
-Required structure:
+1- وضعیت فعلی تاخیر
 
-1. وضعیت بحرانی برنامه:
-- Identify delayed activities
-- Explain schedule variance impact
+2- علت های محتمل تاخیر:
+Engineering
+Procurement
+Construction
+Management
 
-2. تحلیل علت ریشهای:
-Classify possible causes:
-- Engineering
-- Procurement
-- Construction
-- Resources
-- Management decisions
 
-3. برنامه بازیابی زمان:
-Provide practical recovery actions:
-- Resource increase
-- Fast tracking
+3- اقدامات Recovery Plan:
+حداکثر 5 اقدام اجرایی شامل:
+- Fast Tracking
 - Crashing
-- Priority adjustment
-- Coordination actions
+- افزایش منابع
+- اولویت بندی فعالیت های بحرانی
+- جلسات هماهنگی
 
-4. تاثیر بر فعالیتهای بعدی:
-Explain impact on:
-- Procurement
-- Construction
-- Project completion date
 
-5. اقدامات فوری مدیریت پروه:
-Provide a numbered action list.
+4- تصمیمات فوری مدیریت:
+حداکثر 3 مورد
 
-Use EPC project management terminology.
-Do not use generic explanations.
+
+قوانین:
+- فقط تحلیل مدیریتی
+- مناسب مدیر پروژه و مدیرعامل
+- بدون کدنویسی
+- زبان فارسی رسمی
+- حداکثر 500 کلمه
 """
 
 
-    ai_response = "Recovery plan AI analysis pending"
+    try:
+
+        ai_response = generate(prompt)
+
+
+    except Exception as e:
+
+        ai_response = (
+            "AI در دسترس نیست. "
+            "Recovery بر اساس Rule Engine تولید شد. "
+            f"فعالیت های بحرانی: {critical_items}"
+        )
+
 
     return {
 

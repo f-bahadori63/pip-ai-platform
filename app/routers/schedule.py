@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+﻿from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database.connection import get_db
+from app.database.session import get_db
 
 from app.schemas.schedule import (
     ScheduleActivityCreate,

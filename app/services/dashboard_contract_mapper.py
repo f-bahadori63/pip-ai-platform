@@ -7,29 +7,25 @@ def map_dashboard_contract(
     dashboard_data: dict
 ):
 
-    kpis = dashboard_data.get(
+    progress = dashboard_data.get(
         "progress",
         {}
     )
-
 
     schedule = dashboard_data.get(
         "schedule",
         {}
     )
 
-
     alerts = dashboard_data.get(
         "alerts",
         []
     )
 
-
     recovery = dashboard_data.get(
         "recovery",
         {}
     )
-
 
     status = dashboard_data.get(
         "project_status",
@@ -37,19 +33,26 @@ def map_dashboard_contract(
     )
 
 
+    recommendation = recovery.get(
+        "recommendation"
+    )
+
+
+    if not recommendation:
+        recommendation = recovery.get("recommendation")
+
+
     return ExecutiveDashboardContract(
 
-        project_id=
-            dashboard_data.get(
-                "project_id"
-            ),
+        project_id=dashboard_data.get(
+            "project_id"
+        ),
 
         health={
 
             "status": status,
 
-            "title":
-                "Project Health",
+            "title": "Project Health",
 
             "message":
                 "Management attention required"
@@ -58,27 +61,32 @@ def map_dashboard_contract(
 
         },
 
+
         progress={
 
             "planned":
-                kpis.get(
+                progress.get(
                     "planned_progress",
                     0
                 ),
 
             "actual":
-                kpis.get(
+                progress.get(
                     "actual_progress",
                     0
                 ),
 
             "variance":
-                kpis.get(
+                progress.get(
                     "variance",
-                    0
+                    progress.get(
+                        "schedule_variance",
+                        0
+                    )
                 )
 
         },
+
 
         schedule={
 
@@ -100,14 +108,19 @@ def map_dashboard_contract(
 
         },
 
+
         alerts=alerts,
+
 
         recovery={
 
             "required":
                 recovery.get(
                     "required",
-                    False
+                    recovery.get(
+                        "recovery_required",
+                        False
+                    )
                 ),
 
             "priority":
@@ -116,9 +129,7 @@ def map_dashboard_contract(
                 ),
 
             "action_plan":
-                recovery.get(
-                    "recommendation"
-                )
+                recommendation
 
         }
 

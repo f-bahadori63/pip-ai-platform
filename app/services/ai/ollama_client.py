@@ -1,6 +1,7 @@
 ﻿import requests
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+
+OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 MODEL_NAME = "qwen2.5:3b"
 
 
@@ -12,15 +13,19 @@ def generate(prompt: str) -> str:
             "model": MODEL_NAME,
             "prompt": prompt,
             "stream": False,
+            "keep_alive": "10m",
             "options": {
-                "num_predict": 300
-            }
+                "num_predict": 100,
+                "temperature": 0.2,
+            },
         },
-        timeout=600,
+        timeout=120,
     )
 
     response.raise_for_status()
 
     data = response.json()
 
-    return data.get("response", "").strip()
+    return str(
+        data.get("response", "")
+    ).strip()

@@ -1,29 +1,15 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+﻿"""
+Legacy compatibility layer.
 
+The canonical database implementation lives in app.database.session.
+This module intentionally does NOT create a second Engine, SessionLocal,
+or SQLAlchemy Base.
 
-DATABASE_URL = "postgresql://pip_user:pip_password@127.0.0.1:5432/pip_db"
+Existing legacy imports can continue to work while the application
+gradually converges on the canonical database layer.
+"""
 
+from app.database.base import Base
+from app.database.session import engine, SessionLocal, get_db
 
-engine = create_engine(
-    DATABASE_URL,
-    echo=True,
-)
-
-
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine,
-)
-
-
-Base = declarative_base()
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+DATABASE_URL = str(engine.url)

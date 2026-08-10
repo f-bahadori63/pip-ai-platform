@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Typography, Box } from "@mui/material";
 
 import api from "../services/api";
@@ -26,7 +26,7 @@ api
 
 return ( <Box> <Typography
      variant="h4"
-     fontWeight="bold"
+     sx={{ fontWeight: "bold" }}
      gutterBottom
    >
 Projects </Typography>
@@ -46,3 +46,5 @@ Projects </Typography>
 
 );
 }
+
+

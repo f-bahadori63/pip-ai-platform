@@ -11,24 +11,25 @@ def build_dashboard_response(
         {}
     )
 
-
     alerts = control_data.get(
         "alerts",
         []
     )
-
 
     recovery = control_data.get(
         "recovery",
         {}
     )
 
-
     schedule = control_data.get(
         "schedule",
         {}
     )
 
+    costs = control_data.get(
+        "costs",
+        {}
+    )
 
     schedule_items = schedule.get(
         "schedule_data",
@@ -46,22 +47,29 @@ def build_dashboard_response(
     average_delay_index = None
 
     if delay_indexes:
-
         average_delay_index = round(
             sum(delay_indexes) / len(delay_indexes),
             3
         )
 
 
+    recovery_text = (
+        recovery.get("recommendation")
+        or recovery.get("action_plan")
+        or "Recovery plan not generated."
+    )
+
+
     return DashboardResponse(
 
         project_id=project_id,
 
-        project_status=
-            kpis.get(
-                "schedule_health",
-                "UNKNOWN"
-            ),
+
+        project_status=kpis.get(
+            "schedule_health",
+            "UNKNOWN"
+        ),
+
 
         progress={
 
@@ -82,8 +90,8 @@ def build_dashboard_response(
                     "schedule_variance",
                     0
                 )
-
         },
+
 
         schedule={
 
@@ -100,11 +108,18 @@ def build_dashboard_response(
                 kpis.get(
                     "critical_activities",
                     0
-                )
+                ),
 
+            "critical_path":
+                schedule.get(
+                    "critical_path",
+                    {}
+                )
         },
 
+        cost=costs,
         alerts=alerts,
+
 
         recovery={
 
@@ -120,10 +135,7 @@ def build_dashboard_response(
                 ),
 
             "recommendation":
-                recovery.get(
-                    "recommendation"
-                )
-
+                recovery_text
         }
-
     )
+

@@ -1,18 +1,11 @@
-from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.database.connection import SessionLocal
+from app.database.session import get_db
 from app.models.wbs import WBSItem
 from app.schemas.wbs import WBSItemCreate, WBSItemRead
 
 router = APIRouter(prefix="/wbs", tags=["WBS"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=WBSItemRead)
 def create_wbs_item(item: WBSItemCreate, db: Session = Depends(get_db)):

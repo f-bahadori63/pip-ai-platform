@@ -1,4 +1,4 @@
-import {
+﻿import {
   AppBar,
   Toolbar,
   Typography,
@@ -21,13 +21,19 @@ export default function Topbar() {
       sx={{
         width: `calc(100% - ${drawerWidth}px)`,
         ml: `${drawerWidth}px`,
-        bgcolor: "background.paper",
+        bgcolor: "#17233a",
         color: "white",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}
     >
       <Toolbar>
-        <Typography variant="h6" fontWeight="bold">
-          PIP AI Platform
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+          }}
+        >
+          Project Intelligence
         </Typography>
 
         <Box sx={{ width: 30 }} />
@@ -40,17 +46,13 @@ export default function Topbar() {
             bgcolor: "white",
             borderRadius: 2,
             px: 2,
-            py: 1,
+            py: 0.75,
+            color: "text.secondary",
           }}
         >
-          <SearchIcon
-            sx={{
-              color: "text.secondary",
-              mr: 1,
-            }}
-          />
+          <SearchIcon sx={{ mr: 1 }} />
 
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2">
             Search...
           </Typography>
         </Box>
@@ -72,11 +74,7 @@ export default function Topbar() {
           Farzad
         </Typography>
 
-        <Avatar
-          sx={{
-            bgcolor: "primary.main",
-          }}
-        >
+        <Avatar sx={{ bgcolor: "primary.main" }}>
           F
         </Avatar>
       </Toolbar>

@@ -1,4 +1,4 @@
-import {
+﻿import {
     Paper,
     Table,
     TableBody,
@@ -40,7 +40,7 @@ import {
               hover
             >
               <TableCell>
-                <Typography fontWeight="bold">
+                <Typography sx={{ fontWeight: "bold" }}>
                   {project.project_code}
                 </Typography>
               </TableCell>
@@ -68,3 +68,5 @@ import {
         
     );
     }
+
+

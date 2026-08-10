@@ -1,8 +1,10 @@
 ﻿from sqlalchemy.orm import Session
 
 from app.models.schedule import ScheduleActivity
-from app.services.ai.ollama_client import generate
+
 from app.services.schedule_control_engine import calculate_schedule_status
+from app.services.schedule.critical_path_engine import calculate_critical_path
+from app.services.schedule.metrics.delay_index import calculate_delay_index
 
 
 def analyze_project_schedule(
@@ -23,56 +25,147 @@ def analyze_project_schedule(
             "project_id": project_id,
             "risk_level": "UNKNOWN",
             "activities_count": 0,
-            "analysis": "No schedule activities found."
+            "schedule_data": [],
+            "critical_path": {
+                "critical_activities": [],
+                "critical_count": 0,
+                "method": "duration_based_cpm_v1",
+            },
+            "analysis": "No schedule activities found.",
+            "recovery": {
+                "recovery_required": False,
+                "priority": "UNKNOWN",
+                "recommendation": "No schedule data available.",
+            },
         }
+
+    critical_path = calculate_critical_path(
+        activities
+    )
 
     schedule_data = []
 
     for activity in activities:
 
-        status_analysis = calculate_schedule_status(activity)
+        status_analysis = calculate_schedule_status(
+            activity
+        )
 
-        schedule_data.append(status_analysis)
+        planned_progress = status_analysis.get(
+            "planned_progress",
+            0
+        )
+
+        actual_progress = status_analysis.get(
+            "actual_progress",
+            0
+        )
+
+        delay_index = calculate_delay_index(
+            {
+                "planned_progress": planned_progress,
+                "actual_progress": actual_progress,
+            }
+        )
+
+        schedule_data.append(
+            {
+                "activity_name":
+                    status_analysis.get(
+                        "activity_name",
+                        activity.activity_name,
+                    ),
+
+                "actual_progress":
+                    actual_progress,
+
+                "planned_progress":
+                    planned_progress,
+
+                "schedule_variance":
+                    status_analysis.get(
+                        "schedule_variance",
+                        round(
+                            actual_progress - planned_progress,
+                            2
+                        ),
+                    ),
+
+                "delay_index":
+                    delay_index,
+
+                "risk_level":
+                    status_analysis.get(
+                        "risk_level",
+                        "UNKNOWN",
+                    ),
+            }
+        )
 
     risk_levels = [
         item.get("risk_level")
         for item in schedule_data
-        if item.get("risk_level")
     ]
 
     if "HIGH" in risk_levels:
         risk_level = "HIGH"
+
     elif "MEDIUM" in risk_levels:
         risk_level = "MEDIUM"
+
     else:
         risk_level = "LOW"
 
-    prompt = f"""
-You are a Senior EPC Project Controls Manager.
+    high_risk = [
+        item
+        for item in schedule_data
+        if item.get("risk_level") == "HIGH"
+    ]
 
-Analyze the following project schedule control data based on PMBOK principles.
+    if high_risk:
+        recovery_required = True
+        priority = "HIGH"
 
-Evaluate:
-1. Current schedule status
-2. Planned vs Actual progress
-3. Schedule Variance
-4. Delay risks
-5. Critical activities
-6. Recovery recommendations
+        names = ", ".join(
+            item["activity_name"]
+            for item in high_risk[:3]
+        )
 
-Schedule Data:
+        analysis = (
+            f"Schedule risk is {risk_level}. "
+            f"{len(high_risk)} high-risk activities require "
+            f"management attention. Critical delayed activities: "
+            f"{names}."
+        )
 
-{schedule_data}
+    else:
+        recovery_required = False
+        priority = risk_level
 
-Answer in Persian.
-"""
+        analysis = (
+            f"Schedule risk is {risk_level}. "
+            f"No high-risk schedule activity was detected "
+            f"by the rule engine."
+        )
 
-    ai_response = "AI analysis pending"
+    recovery = {
+        "recovery_required": recovery_required,
+        "priority": priority,
+        "recommendation": (
+            "Recovery workflow should be initiated for "
+            "high-risk delayed activities."
+            if recovery_required
+            else
+            "Continue schedule monitoring."
+        ),
+    }
 
     return {
         "project_id": project_id,
         "risk_level": risk_level,
         "activities_count": len(activities),
         "schedule_data": schedule_data,
-        "analysis": ai_response
+        "critical_path": critical_path,
+        "analysis": analysis,
+        "recovery": recovery,
     }

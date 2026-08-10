@@ -9,7 +9,11 @@ class ScheduleActivity(Base):
 
     __tablename__ = "schedule_activities"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
     project_id = Column(
         Integer,

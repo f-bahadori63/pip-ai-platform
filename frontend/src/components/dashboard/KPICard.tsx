@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Box } from "@mui/material";
+﻿import { Card, CardContent, Typography, Box } from "@mui/material";
 import type { ReactNode } from "react";
 
 interface KPICardProps {
@@ -38,7 +38,7 @@ alignItems: "center",
 ```
         <Typography
           variant="h4"
-          fontWeight="bold"
+          sx={{ fontWeight: "bold" }}
         >
           {value}
         </Typography>
@@ -63,3 +63,5 @@ alignItems: "center",
 </Card>
 );
 }
+
+

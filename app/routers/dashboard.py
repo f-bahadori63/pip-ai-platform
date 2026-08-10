@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
@@ -11,8 +11,8 @@ from app.services.dashboard_service import (
     build_dashboard_response
 )
 
-from app.services.dashboard_contract_mapper import (
-    map_dashboard_contract
+from app.services.ai.project_summary import (
+    generate_project_summary
 )
 
 
@@ -22,9 +22,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "/project/{project_id}"
-)
+@router.get("/project/{project_id}")
 def project_dashboard(
     project_id: int,
     db: Session = Depends(get_db)
@@ -35,14 +33,39 @@ def project_dashboard(
         project_id
     )
 
-
     dashboard = build_dashboard_response(
         project_id,
         control_data
     )
 
-
     return dashboard
+
+
+
+@router.get("/ai-summary/{project_id}")
+def ai_project_summary(
+    project_id: int,
+    db: Session = Depends(get_db)
+):
+
+    control_data = build_project_control_center(
+        db,
+        project_id
+    )
+
+    dashboard_data = build_dashboard_response(
+        project_id,
+        control_data
+    )
+
+    summary = generate_project_summary(
+        dashboard_data
+    )
+
+    return {
+        "project_id": project_id,
+        "summary": summary
+    }
 
 
 
@@ -52,26 +75,46 @@ def executive_dashboard(
     db: Session = Depends(get_db)
 ):
 
-    print("STEP 1")
+    control_data = build_project_control_center(
+        db,
+        project_id
+    )
+
+    return build_dashboard_response(
+        project_id,
+        control_data
+    )
+
+
+
+@router.get("/critical-activities/{project_id}")
+def critical_activities_dashboard(
+    project_id: int,
+    db: Session = Depends(get_db)
+):
 
     control_data = build_project_control_center(
         db,
         project_id
     )
 
-    print("STEP 2 CONTROL CENTER DONE")
-
-    dashboard_data = build_dashboard_response(
-        project_id,
-        control_data
+    schedule = control_data.get(
+        "schedule",
+        {}
     )
 
-    print("STEP 3 DASHBOARD RESPONSE DONE")
-
-    result = map_dashboard_contract(
-        dashboard_data.model_dump()
+    activities = schedule.get(
+        "schedule_data",
+        []
     )
 
-    print("STEP 4 MAPPING DONE")
+    critical = [
+        item for item in activities
+        if item.get("risk_level") == "HIGH"
+    ]
 
-    return result
+    return {
+        "project_id": project_id,
+        "count": len(critical),
+        "activities": critical
+    }

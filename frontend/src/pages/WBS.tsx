@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Box, Paper, Typography, CircularProgress } from "@mui/material";
 
 import { getProjectWBS, type WBSItem } from "../services/wbsApi";
@@ -16,7 +16,7 @@ export default function WBS() {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+      <Typography variant="h4" sx={{ fontWeight: "bold" }} gutterBottom>
         WBS Management
       </Typography>
 
@@ -54,3 +54,5 @@ export default function WBS() {
     </Box>
   );
 }
+
+

@@ -5,6 +5,11 @@
         []
     )
 
+    critical_path = schedule_analysis.get(
+        "critical_path",
+        {}
+    )
+
 
     if not schedule_data:
 
@@ -17,7 +22,6 @@
     total_planned = 0
     total_actual = 0
     total_variance = 0
-    high_risk_count = 0
 
 
     for activity in schedule_data:
@@ -38,16 +42,13 @@
         if planned is not None:
             total_planned += planned
 
+
         if actual is not None:
             total_actual += actual
 
+
         if variance is not None:
             total_variance += variance
-
-        if activity.get(
-            "risk_level"
-        ) == "HIGH":
-            high_risk_count += 1
 
 
 
@@ -59,10 +60,12 @@
         2
     )
 
+
     avg_actual = round(
         total_actual / count,
         2
     )
+
 
     avg_variance = round(
         total_variance / count,
@@ -81,6 +84,12 @@
 
 
 
+    critical_count = critical_path.get(
+        "critical_count",
+        0
+    )
+
+
     return {
 
         "schedule_health": health,
@@ -91,11 +100,16 @@
 
         "schedule_variance": avg_variance,
 
-        "critical_activities": high_risk_count,
+        "critical_activities": critical_count,
+
+        "critical_path_method":
+            critical_path.get(
+                "method"
+            ),
 
         "recovery_status":
             "REQUIRED"
-            if health == "RED"
+            if health in ["RED", "YELLOW"]
             else "MONITOR"
 
     }
