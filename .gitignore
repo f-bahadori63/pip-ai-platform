@@ -52,3 +52,11 @@ PIP_GEMINI_*.md
 # Local test artifacts
 test_schedule.xlsx
 frontend/build-errors.txt
+
+# PIP history cleanup protection
+**/backup_*/
+**/*backup*/
+**/*.backup.*
+**/src_backup_*/
+**/*gemini*/
+**/*GEMINI*/
