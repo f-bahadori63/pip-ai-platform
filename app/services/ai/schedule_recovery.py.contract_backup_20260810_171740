@@ -1,0 +1,145 @@
+﻿from app.services.ai.ollama_client import generate
+
+
+def _rule_based_recovery(critical_items):
+    """
+    Deterministic Recovery Plan.
+    This is the guaranteed fallback and must never depend on LLM.
+    """
+
+    activities = [
+        item.get("activity_name", "Unknown Activity")
+        for item in critical_items
+    ]
+
+    activity_text = ", ".join(activities)
+
+    return (
+        "تاخیر بحرانی در فعالیت‌های زیر شناسایی شده است: "
+        f"{activity_text}. "
+        "اقدامات فوری شامل بازبینی برنامه تفصیلی، "
+        "افزایش منابع در فعالیت بحرانی، بررسی امکان Fast Tracking "
+        "و Crashing، اولویت‌دهی به فعالیت‌های بحرانی و برگزاری "
+        "جلسه روزانه کنترل برنامه است."
+    )
+
+
+def generate_recovery_plan(schedule_data):
+
+    critical_items = []
+
+    for activity in schedule_data:
+
+        variance = activity.get("schedule_variance")
+
+        if variance is not None and variance < -20:
+            critical_items.append(activity)
+
+    # --------------------------------------------------------
+    # NO RECOVERY REQUIRED
+    # --------------------------------------------------------
+
+    if not critical_items:
+
+        return {
+            "recovery_required": False,
+            "priority": "NORMAL",
+            "critical_activities": [],
+            "recommendation": "No recovery action required.",
+            "ai_status": "not_required",
+        }
+
+    # --------------------------------------------------------
+    # GUARANTEED RULE-BASED FALLBACK
+    # --------------------------------------------------------
+
+    fallback = _rule_based_recovery(
+        critical_items
+    )
+
+    # --------------------------------------------------------
+    # COMPACT AI INPUT
+    # --------------------------------------------------------
+
+    compact_items = []
+
+    for activity in critical_items:
+
+        compact_items.append({
+            "activity": activity.get("activity_name"),
+            "variance": activity.get("schedule_variance"),
+            "progress": activity.get("actual_progress"),
+            "planned": activity.get("planned_progress"),
+        })
+
+    prompt = f"""
+شما مدیر ارشد کنترل پروژه EPC هستید.
+
+برای فعالیت‌های بحرانی زیر یک Recovery Plan بسیار کوتاه
+و اجرایی برای مدیر پروژه تهیه کنید.
+
+فعالیت‌ها:
+{compact_items}
+
+خروجی فقط شامل این موارد باشد:
+
+1. وضعیت تاخیر
+2. حداکثر 4 اقدام Recovery
+3. حداکثر 2 تصمیم فوری مدیریت
+
+تمرکز بر:
+Fast Tracking
+Crashing
+افزایش منابع
+اولویت‌بندی فعالیت بحرانی
+هماهنگی مدیریت
+
+زبان فارسی رسمی.
+حداکثر 250 کلمه.
+"""
+
+    # --------------------------------------------------------
+    # AI ENRICHMENT
+    # --------------------------------------------------------
+
+    try:
+
+        ai_response = generate(
+            prompt,
+            timeout=45,
+            num_predict=70,
+            temperature=0.2,
+        )
+
+        if ai_response:
+
+            return {
+                "recovery_required": True,
+                "priority": "HIGH",
+                "critical_activities": critical_items,
+                "recommendation": ai_response,
+                "ai_status": "completed",
+            }
+
+    except Exception as exc:
+
+        return {
+            "recovery_required": True,
+            "priority": "HIGH",
+            "critical_activities": critical_items,
+            "recommendation": fallback,
+            "ai_status": "fallback",
+            "ai_error": str(exc),
+        }
+
+    # --------------------------------------------------------
+    # EMPTY AI RESPONSE
+    # --------------------------------------------------------
+
+    return {
+        "recovery_required": True,
+        "priority": "HIGH",
+        "critical_activities": critical_items,
+        "recommendation": fallback,
+        "ai_status": "fallback",
+    }
