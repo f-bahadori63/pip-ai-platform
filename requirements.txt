@@ -1,4 +1,4 @@
-fastapi
+﻿fastapi
 uvicorn
 sqlalchemy
 psycopg2-binary
@@ -9,3 +9,5 @@ requests
 pandas
 
 python-multipart
+
+pypdf==6.16.1
