@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse
 from app.routers.cost import router as cost_router
 from app.routers.risk_register.risk_register import router as risk_register_router
 from app.routers.demo.router import router as demo_router
+import os
 
 app = FastAPI(
     title="PIP AI Platform",
@@ -39,8 +40,12 @@ app.include_router(demo_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://127.0.0.1:5173",
-        "http://localhost:5173",
+        origin.strip()
+        for origin in os.getenv(
+            "ALLOWED_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173"
+        ).split(",")
+        if origin.strip()
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -60,9 +65,3 @@ def root():
         "system": "PIP AI Platform",
         "status": "running"
     }
-
-
-
-
-
-

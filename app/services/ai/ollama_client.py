@@ -1,12 +1,23 @@
-﻿import requests
+import os
 
-OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-MODEL_NAME = "qwen2.5:3b"
+import requests
+
+OLLAMA_BASE_URL = os.getenv(
+    "OLLAMA_BASE_URL",
+    "http://127.0.0.1:11434",
+).rstrip("/")
+
+OLLAMA_URL = f"{OLLAMA_BASE_URL}/api/generate"
+
+MODEL_NAME = os.getenv(
+    "OLLAMA_MODEL",
+    "qwen2.5:1.5b",
+)
 
 
 def generate(
     prompt: str,
-    timeout: int = 120,
+    timeout: int = 300,
     num_predict: int = 100,
     temperature: float = 0.2,
 ) -> str:

@@ -1,11 +1,11 @@
-﻿from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
 
 from app.models.project import Project
 
-from app.services.ai.ollama_client import generate
+from app.services.ai.ollama_client import generate, MODEL_NAME
 from app.services.ai.project_assistant import build_project_summary
 
 from app.services.ai.schedule_analyzer import analyze_project_schedule
@@ -42,7 +42,7 @@ def local_chat(
         )
 
         return {
-            "model": "qwen2.5:3b",
+            "model": MODEL_NAME,
             "response": response,
             "done": True,
             "project_id": None,
@@ -59,7 +59,7 @@ def local_chat(
     if not project:
 
         return {
-            "model": "qwen2.5:3b",
+            "model": MODEL_NAME,
             "response": "Project not found.",
             "done": True,
             "project_id": project_id,
@@ -150,28 +150,76 @@ ALERTS
 """
 
     ai_prompt = f"""
-You are PIP Project Intelligence Assistant.
+You are the Project Intelligence Assistant for PIP AI Platform.
 
-You are an expert EPC project controls manager
-for Oil & Gas, Petrochemical, Steel and Industrial EPC projects.
+You are answering a question about Project {project_id}.
 
-Use ONLY the project data supplied below.
-Do not invent missing information.
+IMPORTANT DATA RULES:
+1. Use ONLY the PROJECT FACTS supplied below.
+2. Never invent project values.
+3. Never replace a supplied project status with your own interpretation.
+4. Never confuse schedule health, risk level, recovery status, or project status.
+5. If a requested value is not supplied, return N/A.
+6. Preserve numeric values exactly as supplied.
+7. Treat the structured PROJECT FACTS section as authoritative.
+8. The user may ask for analysis, but factual KPI values must come from PROJECT FACTS.
+9. For Project Status, use exactly the supplied Project Status value.
+10. For Recovery Required:
+    - If Recovery Required is TRUE, say that recovery is required.
+    - If Recovery Required is FALSE, say that recovery is not required.
+    - Do not substitute Recovery Status for Recovery Required.
+11. Do not translate field names when the user explicitly requests exact field names.
+12. Do not fabricate cost, schedule, risk, or activity information.
 
-PROJECT DATA:
-{context}
+============================================================
+PROJECT FACTS â€” AUTHORITATIVE
+============================================================
 
-USER QUESTION:
+Project ID: {project_id}
+Project Status: {project.status}
+
+SCHEDULE FACTS
+Schedule Health: {kpis.get("schedule_health")}
+Risk Level: {schedule.get("risk_level")}
+Planned Progress: {kpis.get("planned_progress")}%
+Actual Progress: {kpis.get("actual_progress")}%
+Schedule Variance: {kpis.get("schedule_variance")}%
+Critical Activities: {len(critical_activities)}
+Recovery Status: {kpis.get("recovery_status")}
+
+RECOVERY FACTS
+Recovery Required: {kpis.get("recovery_status")}
+Recovery Priority: {getattr(locals().get("recovery", None), "priority", None) if False else "See project recovery data"}
+Recovery Recommendation:
+{critical_text}
+
+COST FACTS
+Planned Cost: {costs.get("planned_cost")}
+Actual Cost: {costs.get("actual_cost")}
+Earned Value: {costs.get("earned_value")}
+Remaining Cost: {costs.get("remaining_cost")}
+Cost Variance: {costs.get("cost_variance")}
+Cost Health: {costs.get("cost_health")}
+
+CRITICAL ACTIVITIES
+{critical_text}
+
+============================================================
+RESPONSE RULES
+============================================================
+
+For factual questions:
+- Return the exact value from PROJECT FACTS.
+- Do not infer a different value.
+
+For analysis questions:
+- First state the factual KPI values.
+- Then provide a concise management interpretation.
+- Clearly distinguish FACT from ANALYSIS.
+- Do not change GREEN/RED/HIGH/MONITOR values.
+
+User question:
 {prompt}
-
-Answer in professional Persian.
-
-Rules:
-- Maximum 5 short sentences.
-- Use actual project numbers.
-- Clearly distinguish facts from recommendations.
-- If schedule recovery is required, say so explicitly.
-- Do not say that you lack project data.
 """
 
     response = generate(
@@ -179,7 +227,7 @@ Rules:
     )
 
     return {
-        "model": "qwen2.5:3b",
+        "model": MODEL_NAME,
         "response": response,
         "done": True,
         "project_id": project_id,

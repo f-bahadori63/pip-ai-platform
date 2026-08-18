@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 
 import api from "../services/api";
+import AIChat from "../components/ai/AIChat";
 
 
 export default function Dashboard() {
@@ -188,7 +189,9 @@ export default function Dashboard() {
         </Grid>
 
 
-      </Grid>
+
+      <AIChat projectId={1} />
+</Grid>
 
     </Box>
 
