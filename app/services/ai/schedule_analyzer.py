@@ -85,10 +85,7 @@ def analyze_project_schedule(
                 "schedule_variance":
                     status_analysis.get(
                         "schedule_variance",
-                        round(
-                            actual_progress - planned_progress,
-                            2
-                        ),
+                        0
                     ),
 
                 "delay_index":

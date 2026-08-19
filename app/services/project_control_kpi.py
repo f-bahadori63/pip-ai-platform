@@ -23,9 +23,11 @@
     total_actual = 0
     total_variance = 0
 
+    weighted_planned = 0
+    weighted_actual = 0
+    total_weight = 0
 
     for activity in schedule_data:
-
         planned = activity.get(
             "planned_progress"
         )
@@ -38,40 +40,74 @@
             "schedule_variance"
         )
 
+        duration = activity.get(
+            "duration_days"
+        )
+
+        try:
+            weight = float(duration or 0)
+        except (TypeError, ValueError):
+            weight = 0
+
+        if weight < 0:
+            weight = 0
 
         if planned is not None:
             total_planned += planned
 
+            if weight > 0:
+                weighted_planned += planned * weight
 
         if actual is not None:
             total_actual += actual
 
+            if weight > 0:
+                weighted_actual += actual * weight
 
         if variance is not None:
             total_variance += variance
 
-
+        if weight > 0:
+            total_weight += weight
 
     count = len(schedule_data)
 
+    if total_weight > 0:
+        avg_planned = round(
+            weighted_planned / total_weight,
+            2
+        )
 
-    avg_planned = round(
-        total_planned / count,
-        2
-    )
+        avg_actual = round(
+            weighted_actual / total_weight,
+            2
+        )
 
+        avg_variance = round(
+            avg_actual - avg_planned,
+            2
+        )
 
-    avg_actual = round(
-        total_actual / count,
-        2
-    )
+    elif count > 0:
+        avg_planned = round(
+            total_planned / count,
+            2
+        )
 
+        avg_actual = round(
+            total_actual / count,
+            2
+        )
 
-    avg_variance = round(
-        total_variance / count,
-        2
-    )
+        avg_variance = round(
+            avg_actual - avg_planned,
+            2
+        )
 
+    else:
+        avg_planned = 0
+        avg_actual = 0
+        avg_variance = 0
 
     if avg_variance <= -30:
         health = "RED"

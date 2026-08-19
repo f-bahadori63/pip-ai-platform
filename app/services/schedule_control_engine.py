@@ -1,4 +1,4 @@
-from datetime import datetime
+﻿from datetime import datetime
 
 
 def calculate_schedule_status(activity):
@@ -41,9 +41,8 @@ def calculate_schedule_status(activity):
 
 
     planned_progress = (
-        elapsed_days /
-        activity.duration_days
-    ) * 100
+    elapsed_days / activity.duration_days
+) * 100
 
 
     if planned_progress > 100:
