@@ -20,7 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import api from "../services/api";
+import api, { uploadScheduleExcel } from "../services/api";
 
 interface Project {
   id: number;
@@ -94,6 +94,8 @@ export default function Schedule() {
   const [activities, setActivities] = useState<ScheduleActivity[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
+  const [uploadingExcel, setUploadingExcel] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
   const [error, setError] = useState("");
 
   const loadProjects = useCallback(async () => {
@@ -170,6 +172,83 @@ export default function Schedule() {
       loadSchedule(projectId);
     }
   }, [projectId, loadSchedule]);
+
+  const handleExcelUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    if (projectId === "") {
+      setError("Please select a project before uploading an Excel schedule.");
+      return;
+    }
+
+    const lowerName = file.name.toLowerCase();
+
+    if (!lowerName.endsWith(".xlsx") && !lowerName.endsWith(".xls")) {
+      setError("Only Excel files (.xlsx, .xls) are allowed.");
+      return;
+    }
+
+    try {
+      setUploadingExcel(true);
+      setUploadMessage("");
+      setError("");
+
+      const response = await uploadScheduleExcel(
+        projectId,
+        file
+      );
+
+      const imported =
+        response?.data?.import ??
+        response?.data ??
+        {};
+
+      const inserted =
+        Number(imported.inserted ?? 0);
+
+      const updated =
+        Number(imported.updated ?? 0);
+
+      const total =
+        Number(
+          imported.total ??
+          imported.total_activities ??
+          inserted + updated
+        );
+
+      setUploadMessage(
+        `Excel uploaded successfully. ${total || inserted + updated} activities processed.`
+      );
+
+      await loadSchedule(projectId);
+
+    } catch (err: any) {
+      console.error(
+        "Excel schedule upload failed:",
+        err
+      );
+
+      const detail =
+        err?.response?.data?.detail;
+
+      setError(
+        typeof detail === "string"
+          ? detail
+          : "Excel schedule upload failed."
+      );
+
+    } finally {
+      setUploadingExcel(false);
+    }
+  };
 
   const statistics = useMemo(() => {
     const total = activities.length;
@@ -312,6 +391,68 @@ export default function Schedule() {
           {error}
         </Alert>
       )}
+      {uploadMessage && (
+        <Alert
+          severity="success"
+          sx={{ mb: 3 }}
+          onClose={() => setUploadMessage("")}
+        >
+          {uploadMessage}
+        </Alert>
+      )}
+
+      <Box
+        sx={{
+          mb: 3,
+          p: 2,
+          border: "1px dashed",
+          borderColor: "divider",
+          borderRadius: 2,
+          display: "flex",
+          alignItems: { xs: "stretch", sm: "center" },
+          justifyContent: "space-between",
+          gap: 2,
+          flexDirection: { xs: "column", sm: "row" },
+        }}
+      >
+        <Box>
+          <Typography
+            variant="subtitle1"
+            sx={{ fontWeight: 700 }}
+          >
+            Import Project Schedule
+          </Typography>
+
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mt: 0.5 }}
+          >
+            Upload an Excel schedule (.xlsx or .xls) for the selected project.
+          </Typography>
+        </Box>
+
+        <Button
+          component="label"
+          variant="contained"
+          disabled={
+            projectId === "" ||
+            uploadingExcel
+          }
+        >
+          {uploadingExcel
+            ? "Uploading..."
+            : "Upload Excel Schedule"}
+
+          <input
+            type="file"
+            hidden
+            accept=".xlsx,.xls"
+            onChange={handleExcelUpload}
+          />
+        </Button>
+      </Box>
+
 
       <Box
         sx={{
@@ -622,5 +763,6 @@ export default function Schedule() {
     </Box>
   );
 }
+
 
 

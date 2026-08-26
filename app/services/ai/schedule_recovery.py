@@ -159,7 +159,10 @@ def _build_recovery_plan(critical_items):
     }
 
 
-def generate_recovery_plan(schedule_data):
+def generate_recovery_plan(
+    schedule_data,
+    use_ai=True
+):
 
     critical_items = []
 
@@ -269,6 +272,26 @@ Crashing
 """
 
     # --------------------------------------------------------
+    # DASHBOARD FAST PATH
+    # --------------------------------------------------------
+    #
+    # The Project Control Center must not block on LLM latency.
+    # Deterministic recovery data is already available.
+    #
+    # AI enrichment remains available when use_ai=True.
+    # --------------------------------------------------------
+
+    if not use_ai:
+        return {
+            "recovery_required": True,
+            "priority": "HIGH",
+            "critical_activities": critical_items,
+            "recommendation": fallback,
+            "ai_status": "not_requested",
+            "recovery_plan": recovery_plan,
+        }
+
+    # --------------------------------------------------------
     # AI ENRICHMENT
     # --------------------------------------------------------
 
@@ -316,3 +339,4 @@ Crashing
         "ai_status": "fallback",
         "recovery_plan": recovery_plan,
     }
+

@@ -1,4 +1,4 @@
-import os
+﻿import os
 
 import requests
 
@@ -13,6 +13,9 @@ MODEL_NAME = os.getenv(
     "OLLAMA_MODEL",
     "qwen2.5:1.5b",
 )
+
+# MVP Smart Import Agent model.
+# qwen2.5:3b was verified to timeout in the local MVP runtime.
 
 
 def generate(
@@ -44,3 +47,4 @@ def generate(
     return str(
         data.get("response", "")
     ).strip()
+

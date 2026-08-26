@@ -27,7 +27,8 @@ def build_project_control_center(
         schedule_analysis.get(
             "schedule_data",
             []
-        )
+        ),
+        use_ai=False
     )
 
     costs = calculate_cost_kpis(
@@ -59,3 +60,4 @@ def build_project_control_center(
         "recovery":
             recovery,
     }
+

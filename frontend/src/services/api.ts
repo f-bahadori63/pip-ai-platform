@@ -19,6 +19,20 @@ export async function uploadDocument(
   );
 }
 
+
+export async function uploadScheduleExcel(
+  projectId: number,
+  file: File
+) {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  return api.post(
+    `/import/schedule/${projectId}`,
+    formData
+  );
+}
 export default api;
 export interface AIChatResponse {
   model: string;
@@ -45,3 +59,4 @@ export async function aiChat(
 
   return response.data;
 }
+

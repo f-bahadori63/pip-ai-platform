@@ -60,3 +60,20 @@ frontend/build-errors.txt
 **/src_backup_*/
 **/*gemini*/
 **/*GEMINI*/
+
+# --- ÇáæåÇí È˜Â/ÂÑÔíæ ---
+_cleanup_archive_*/
+_archive/
+_sprint_backups/
+_gemini_export_*/
+_cloud_patch_backups/
+*_backup_*/
+*.bak
+*.bak_*
+
+# one-off scripts and audit dumps
+*.ps1
+PIP_*.txt
+PIP_*.json
+PIP_*.md
+PIP_*.csv
