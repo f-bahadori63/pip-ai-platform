@@ -1,9 +1,9 @@
-﻿activity_code,activity_name,wbs_id,duration_days,progress_percent,status,start_date,finish_date,responsible_party
-ENG-001,Existing Generator Survey,10,5,100,Completed,2026-08-01,2026-08-05,Engineering
-ENG-002,3D Modeling,11,10,60,In Progress,2026-08-06,2026-08-15,CAD Team
-ENG-003,Reverse Engineering Drawings,12,8,20,In Progress,2026-08-16,2026-08-24,Engineering
-MFG-001,Machining,13,12,0,Not Started,2026-08-25,2026-09-05,Workshop
-MFG-002,Fabrication,14,15,0,Not Started,2026-09-01,2026-09-15,Fabrication Shop
-ASM-001,Mechanical Assembly,15,7,0,Not Started,2026-09-16,2026-09-22,Assembly Team
-ASM-002,Electrical Assembly,16,6,0,Not Started,2026-09-20,2026-09-26,Electrical Team
-TST-001,Factory Acceptance Test,17,3,0,Not Started,2026-09-27,2026-09-30,QA/QC
+activity_code	activity_name	wbs_id	duration_days	progress_percent	status	start_date	finish_date	responsible_party
+ENG-001	Existing Generator Survey	10	5	100	Completed	8/1/2026	8/5/2026	Engineering
+ENG-002	3D Modeling	11	10	100	Completed	8/6/2026	8/15/2026	CAD Team
+ENG-003	Reverse Engineering Drawings	12	8	15	In Progress	8/16/2026	8/24/2026	Engineering
+MFG-001	Machining	13	12	10	In Progress	8/25/2026	9/5/2026	Workshop
+MFG-002	Fabrication	14	15	5	In Progress	9/1/2026	9/15/2026	Fabrication Shop
+ASM-001	Mechanical Assembly	15	7	0	Not Started	9/16/2026	9/22/2026	Assembly Team
+ASM-002	Electrical Assembly	16	6	0	Not Started	9/20/2026	9/26/2026	Electrical Team
+TST-001	Factory Acceptance Test	17	3	0	Not Started	9/27/2026	9/30/2026	QA/QC
