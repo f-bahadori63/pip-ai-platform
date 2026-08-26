@@ -1,6 +1,3 @@
-cd D:\PIP\Projects\pip-ai-platform
-
-@"
 # PIP AI Platform
 
 **Project Intelligence Platform for EPC Industries — MVP 1.0**
