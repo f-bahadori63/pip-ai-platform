@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.models.risk_register.risk_register import ProjectRisk
 
-
 router = APIRouter(
     prefix="/risk",
     tags=["Risk Register"]

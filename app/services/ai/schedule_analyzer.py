@@ -1,10 +1,9 @@
 ﻿from sqlalchemy.orm import Session
 
 from app.models.schedule import ScheduleActivity
-
-from app.services.schedule_control_engine import calculate_schedule_status
 from app.services.schedule.critical_path_engine import calculate_critical_path
 from app.services.schedule.metrics.delay_index import calculate_delay_index
+from app.services.schedule_control_engine import calculate_schedule_status
 
 
 def analyze_project_schedule(
@@ -85,7 +84,10 @@ def analyze_project_schedule(
                 "schedule_variance":
                     status_analysis.get(
                         "schedule_variance",
-                        0
+                        round(
+                            actual_progress - planned_progress,
+                            2
+                        ),
                     ),
 
                 "delay_index":

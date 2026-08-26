@@ -1,7 +1,7 @@
 ﻿from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import pandas as pd
 
@@ -25,7 +25,7 @@ def _json_safe(value: Any) -> Any:
     return value
 
 
-def profile_excel(file_path: str | Path) -> Dict[str, Any]:
+def profile_excel(file_path: str | Path) -> dict[str, Any]:
     file_path = Path(file_path)
 
     if not file_path.exists():
@@ -33,7 +33,7 @@ def profile_excel(file_path: str | Path) -> Dict[str, Any]:
 
     workbook = pd.ExcelFile(file_path)
 
-    sheets: List[Dict[str, Any]] = []
+    sheets: list[dict[str, Any]] = []
 
     for sheet_name in workbook.sheet_names:
         df = pd.read_excel(

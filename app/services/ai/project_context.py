@@ -1,4 +1,4 @@
-﻿import json
+import json
 from typing import Any
 
 from sqlalchemy.orm import Session
@@ -38,10 +38,7 @@ def _select_critical_activities(schedule: Any) -> list:
         if str(activity.get("risk", "")).upper() == "HIGH"
     ]
 
-    if high_risk:
-        activities = high_risk
-    else:
-        activities = normalized
+    activities = high_risk or normalized
 
     activities.sort(
         key=lambda x: float(x.get("variance", 0) or 0)
@@ -82,9 +79,8 @@ def build_project_ai_context(
             "error": "Project context unavailable"
         }
 
-    if isinstance(control_center, dict):
-        if control_center.get("error"):
-            return control_center
+    if isinstance(control_center, dict) and control_center.get("error"):
+        return control_center
 
     schedule = _get(control_center, "schedule", {}) or {}
     kpis = _get(control_center, "kpis", {}) or {}

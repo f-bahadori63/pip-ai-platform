@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -7,24 +6,24 @@ from pydantic import BaseModel
 class RiskBase(BaseModel):
     risk_code: str
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     category: str = "Technical"
     probability: int
     impact: int
     status: str = "Open"
-    response_plan: Optional[str] = None
-    owner: Optional[str] = None
+    response_plan: str | None = None
+    owner: str | None = None
 
 
 class RiskCreate(RiskBase):
     project_id: int
-    wbs_item_id: Optional[int] = None
+    wbs_item_id: int | None = None
 
 
 class RiskResponse(RiskBase):
     id: int
     project_id: int
-    wbs_item_id: Optional[int]
+    wbs_item_id: int | None
     score: int
     created_at: datetime
 

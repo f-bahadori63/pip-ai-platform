@@ -1,10 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.schedule import ScheduleActivity
-from app.schemas.schedule import (
-    ScheduleActivityCreate,
-    ScheduleActivityUpdate
-)
+from app.schemas.schedule import ScheduleActivityCreate, ScheduleActivityUpdate
 
 
 def create_activity(

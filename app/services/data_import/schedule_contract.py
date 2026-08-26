@@ -1,9 +1,6 @@
 ﻿from __future__ import annotations
 
-from typing import Dict, List
-
-
-SCHEDULE_CONTRACT: Dict[str, dict] = {
+SCHEDULE_CONTRACT: dict[str, dict] = {
     "activity_code": {
         "required": True,
         "type": "string",
@@ -359,14 +356,14 @@ SCHEDULE_CONTRACT: Dict[str, dict] = {
 }
 
 
-REQUIRED_FIELDS: List[str] = [
+REQUIRED_FIELDS: list[str] = [
     field
     for field, definition in SCHEDULE_CONTRACT.items()
     if definition["required"]
 ]
 
 
-OPTIONAL_FIELDS: List[str] = [
+OPTIONAL_FIELDS: list[str] = [
     field
     for field, definition in SCHEDULE_CONTRACT.items()
     if not definition["required"]

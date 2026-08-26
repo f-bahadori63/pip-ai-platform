@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -7,10 +6,10 @@ from pydantic import BaseModel
 class ProjectBase(BaseModel):
     project_code: str
     name: str
-    client: Optional[str] = None
-    contract_value: Optional[float] = None
-    currency: Optional[str] = "IRR"
-    status: Optional[str] = "Planning"
+    client: str | None = None
+    contract_value: float | None = None
+    currency: str | None = "IRR"
+    status: str | None = "Planning"
 
 
 class ProjectCreate(ProjectBase):
@@ -18,18 +17,18 @@ class ProjectCreate(ProjectBase):
 
 
 class ProjectUpdate(BaseModel):
-    project_code: Optional[str] = None
-    name: Optional[str] = None
-    client: Optional[str] = None
-    contract_value: Optional[float] = None
-    currency: Optional[str] = None
-    status: Optional[str] = None
+    project_code: str | None = None
+    name: str | None = None
+    client: str | None = None
+    contract_value: float | None = None
+    currency: str | None = None
+    status: str | None = None
 
 
 class ProjectResponse(ProjectBase):
     id: int
     created_at: datetime
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
 
     class Config:
         from_attributes = True

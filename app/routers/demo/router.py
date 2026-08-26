@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.services.ai.project_control_center import build_project_control_center
 
-
 router = APIRouter(
     prefix="/demo",
     tags=["Demo"]

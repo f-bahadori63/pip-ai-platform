@@ -1,20 +1,10 @@
-﻿from fastapi import APIRouter, Depends, HTTPException
+﻿from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-
-from app.services.ai.project_control_center import (
-    build_project_control_center
-)
-
-from app.services.dashboard_service import (
-    build_dashboard_response
-)
-
-from app.services.ai.project_summary import (
-    generate_project_summary
-)
-
+from app.services.ai.project_control_center import build_project_control_center
+from app.services.ai.project_summary import generate_project_summary
+from app.services.dashboard_service import build_dashboard_response
 
 router = APIRouter(
     prefix="/dashboard",

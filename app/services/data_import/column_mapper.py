@@ -2,7 +2,6 @@
 
 import re
 from difflib import SequenceMatcher
-from typing import Dict, List, Optional, Tuple
 
 from .normalization_models import ColumnMapping
 from .schedule_contract import SCHEDULE_CONTRACT
@@ -140,33 +139,32 @@ def _semantic_score(
         if "date" in source_tokens:
             score -= 0.45
 
-    if target == "progress_percent":
-        if (
-            "progress" in source_tokens
-            or "complete" in source_tokens
-            or "completion" in source_tokens
-        ):
-            score += 0.45
+    if target == "progress_percent" and (
+        "progress" in source_tokens
+        or "complete" in source_tokens
+        or "completion" in source_tokens
+    ):
+        score += 0.45
 
-    if target == "status":
-        if "status" in source_tokens or "state" in source_tokens:
-            score += 0.55
+    if target == "status" and (
+        "status" in source_tokens or "state" in source_tokens
+    ):
+        score += 0.55
 
-    if target == "responsible_party":
-        if any(
-            token in source_tokens
-            for token in {
-                "responsible",
-                "contractor",
-                "subcontractor",
-                "company",
-                "discipline",
-                "owner",
-                "assigned",
-                "party",
-            }
-        ):
-            score += 0.55
+    if target == "responsible_party" and any(
+        token in source_tokens
+        for token in {
+            "responsible",
+            "contractor",
+            "subcontractor",
+            "company",
+            "discipline",
+            "owner",
+            "assigned",
+            "party",
+        }
+    ):
+        score += 0.55
 
     return score
 
@@ -184,11 +182,10 @@ SMART_EXCEL_ALIASES = {
     "duration days": "duration_days",
     "duration day": "duration_days",
     "duration/days": "duration_days",
-    "duration days": "duration_days",
 }
 def _alias_match(
     source_column: str,
-) -> Optional[Tuple[str, str]]:
+) -> tuple[str, str] | None:
     normalized_source = normalize_column_name(source_column)
 
     # --------------------------------------------------------
@@ -204,7 +201,7 @@ def _alias_match(
             f"Matched smart Excel alias '{source_column}'",
         )
 
-    for target, definition in SCHEDULE_CONTRACT.items():
+    for target, _definition in SCHEDULE_CONTRACT.items():
         if normalized_source == normalize_column_name(target):
             return target, "Exact canonical field match"
 
@@ -218,8 +215,8 @@ def _alias_match(
 
 def _build_fuzzy_candidates(
     source_column: str,
-) -> List[Tuple[float, str]]:
-    candidates: List[Tuple[float, str]] = []
+) -> list[tuple[float, str]]:
+    candidates: list[tuple[float, str]] = []
 
     for target, definition in SCHEDULE_CONTRACT.items():
 
@@ -245,24 +242,28 @@ def _build_fuzzy_candidates(
         # Explicit hard rejection for obvious semantic contradictions.
         source_tokens = _tokens(source_column)
 
-        if target == "activity_code":
-            if source_tokens & {
+        if target == "activity_code" and (
+            source_tokens
+            & {
                 "title",
                 "description",
                 "desc",
                 "scope",
-            }:
-                combined -= 0.35
+            }
+        ):
+            combined -= 0.35
 
-        if target == "activity_name":
-            if source_tokens & {
+        if target == "activity_name" and (
+            source_tokens
+            & {
                 "code",
                 "id",
                 "identifier",
                 "number",
                 "no",
-            }:
-                combined -= 0.35
+            }
+        ):
+            combined -= 0.35
 
         candidates.append(
             (
@@ -379,18 +380,18 @@ def map_column(
 
 
 def map_columns(
-    source_columns: List[str],
-) -> List[ColumnMapping]:
+    source_columns: list[str],
+) -> list[ColumnMapping]:
 
-    mappings: List[ColumnMapping] = []
+    mappings: list[ColumnMapping] = []
 
     # --------------------------------------------------------
     # Pass 1: exact + aliases.
     # This guarantees that strong mappings reserve targets.
     # --------------------------------------------------------
-    reserved_targets: Dict[str, ColumnMapping] = {}
+    reserved_targets: dict[str, ColumnMapping] = {}
 
-    pending: List[str] = []
+    pending: list[str] = []
 
     for column in source_columns:
 

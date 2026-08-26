@@ -1,13 +1,13 @@
 ﻿from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
 class ColumnMapping:
     source_column: str
-    target_field: Optional[str]
+    target_field: str | None
     confidence: float
     method: str
     reason: str = ""
@@ -24,11 +24,11 @@ class MissingField:
 @dataclass
 class NormalizationResult:
     status: str
-    mappings: List[ColumnMapping] = field(default_factory=list)
-    missing_fields: List[MissingField] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    normalized_rows: List[Dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    mappings: list[ColumnMapping] = field(default_factory=list)
+    missing_fields: list[MissingField] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    normalized_rows: list[dict[str, Any]] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def requires_user_input(self) -> bool:

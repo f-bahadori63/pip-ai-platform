@@ -1,12 +1,12 @@
-﻿from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+﻿import os
+import tempfile
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from pypdf import PdfReader
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
 from app.services.data_import.schedule_importer import import_schedule_excel
-
-import os
-import tempfile
-from pypdf import PdfReader
 
 router = APIRouter(
     prefix="/documents",
@@ -177,7 +177,7 @@ async def upload_document(
     "input_type": "pdf",
     "filename": filename,
     "project_id": project_id,
-    "pages_text_extracted": len(reader.pages) if "reader" in locals() else None,
+    "pages_text_extracted": len(reader.pages) if "reader" in locals() else None,  # noqa: F821 - defensive guard (reader exists in _extract_pdf_text scope)
     "text_length": len(pdf_text),
     "extracted_text": pdf_text,
     "management_intelligence": ai_result,

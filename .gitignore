@@ -5,6 +5,7 @@ Thumbs.db
 # Environment files
 .env
 .env.*
+!.env.example
 
 # Python
 __pycache__/
@@ -77,3 +78,10 @@ PIP_*.txt
 PIP_*.json
 PIP_*.md
 PIP_*.csv
+
+# Local debug / scratch artifacts (never commit)
+_committee_*
+_mvp_*.py
+frontend/frontend-build-errors.txt
+pip-ai-platform-*.patch
+pip-ai-platform-*.zip

@@ -6,9 +6,9 @@ services:
     restart: unless-stopped
 
     environment:
-      POSTGRES_USER: pip_user
-      POSTGRES_PASSWORD: pip_password
-      POSTGRES_DB: pip_db
+      POSTGRES_USER: ${POSTGRES_USER:-pip_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pip_password}
+      POSTGRES_DB: ${POSTGRES_DB:-pip_db}
 
     ports:
       - "5432:5432"
@@ -68,8 +68,8 @@ services:
     command: server /data --console-address ":9001"
 
     environment:
-      MINIO_ROOT_USER: pipadmin
-      MINIO_ROOT_PASSWORD: pipminio123
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-pipadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-pipminio123}
 
     ports:
       - "9000:9000"
@@ -80,27 +80,29 @@ services:
 
     networks:
       - pip-network
+
   ollama:
     image: ollama/ollama:latest
     container_name: pip-ollama
     restart: unless-stopped
-    
+
     ports:
-       - "11434:11434"
-    
+      - "11434:11434"
+
     volumes:
-          - ollama_data:/root/.ollama
-    
+      - ollama_data:/root/.ollama
+
     networks:
-          - pip-network
+      - pip-network
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pip-pgadmin
     restart: unless-stopped
 
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pip.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@pip.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
 
     ports:
       - "5050:80"
@@ -117,6 +119,7 @@ volumes:
   qdrant_data:
   minio_data:
   ollama_data:
+
 networks:
   pip-network:
     driver: bridge

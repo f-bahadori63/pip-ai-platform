@@ -1,4 +1,3 @@
-from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -19,7 +18,7 @@ def create_new_risk(risk: RiskCreate, db: Session = Depends(get_db)):
     return create_risk(db, risk)
 
 
-@router.get("/project/{project_id}", response_model=List[RiskResponse])
+@router.get("/project/{project_id}", response_model=list[RiskResponse])
 def get_risks(project_id: int, db: Session = Depends(get_db)):
     return get_project_risks(db, project_id)
 

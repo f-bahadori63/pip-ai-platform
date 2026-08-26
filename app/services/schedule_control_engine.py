@@ -1,4 +1,4 @@
-﻿from datetime import datetime
+from datetime import UTC, datetime
 
 
 def calculate_schedule_status(activity):
@@ -28,7 +28,7 @@ def calculate_schedule_status(activity):
         return result
 
 
-    today = datetime.utcnow()
+    today = datetime.now(UTC).replace(tzinfo=None)
 
 
     elapsed_days = (

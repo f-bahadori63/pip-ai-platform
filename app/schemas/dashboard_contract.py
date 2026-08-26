@@ -1,4 +1,4 @@
-﻿from typing import List, Optional
+﻿
 from pydantic import BaseModel
 
 
@@ -26,7 +26,7 @@ class ScheduleCard(BaseModel):
 
     health: str
 
-    delay_index: Optional[float]
+    delay_index: float | None
 
     critical_items: int
 
@@ -48,9 +48,9 @@ class RecoveryCard(BaseModel):
 
     required: bool
 
-    priority: Optional[str]
+    priority: str | None
 
-    action_plan: Optional[str]
+    action_plan: str | None
 
 
 
@@ -64,6 +64,6 @@ class ExecutiveDashboardContract(BaseModel):
 
     schedule: ScheduleCard
 
-    alerts: List[AlertCard]
+    alerts: list[AlertCard]
 
     recovery: RecoveryCard

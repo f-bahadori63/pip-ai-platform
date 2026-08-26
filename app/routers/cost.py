@@ -5,7 +5,6 @@ from app.database.session import get_db
 from app.models.cost.cost import ProjectCost
 from app.services.cost.cost_engine import calculate_cost_kpis
 
-
 router = APIRouter(
     prefix="/cost",
     tags=["Cost"]

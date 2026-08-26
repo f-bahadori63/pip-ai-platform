@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -9,19 +8,19 @@ class ScheduleActivityBase(BaseModel):
     activity_code: str
     activity_name: str
 
-    wbs_id: Optional[int] = None
+    wbs_id: int | None = None
 
-    duration_days: Optional[int] = None
+    duration_days: int | None = None
 
-    progress_percent: Optional[float] = 0
+    progress_percent: float | None = 0
 
-    status: Optional[str] = "Not Started"
+    status: str | None = "Not Started"
 
-    start_date: Optional[datetime] = None
+    start_date: datetime | None = None
 
-    finish_date: Optional[datetime] = None
+    finish_date: datetime | None = None
 
-    responsible_party: Optional[str] = None
+    responsible_party: str | None = None
 
 
 
@@ -35,19 +34,19 @@ class ScheduleActivityCreate(
 
 class ScheduleActivityUpdate(BaseModel):
 
-    activity_name: Optional[str] = None
+    activity_name: str | None = None
 
-    duration_days: Optional[int] = None
+    duration_days: int | None = None
 
-    progress_percent: Optional[float] = None
+    progress_percent: float | None = None
 
-    status: Optional[str] = None
+    status: str | None = None
 
-    start_date: Optional[datetime] = None
+    start_date: datetime | None = None
 
-    finish_date: Optional[datetime] = None
+    finish_date: datetime | None = None
 
-    responsible_party: Optional[str] = None
+    responsible_party: str | None = None
 
 
 

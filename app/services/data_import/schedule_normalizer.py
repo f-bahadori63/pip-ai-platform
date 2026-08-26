@@ -1,15 +1,16 @@
 ﻿from __future__ import annotations
 
-from datetime import datetime
+import contextlib
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import pandas as pd
 
-from .column_mapper import map_columns
 from app.services.ai.smart_import_agent import (
     resolve_column_mapping,
 )
+
+from .column_mapper import map_columns
 from .normalization_models import (
     ColumnMapping,
     MissingField,
@@ -142,9 +143,9 @@ def normalize_schedule_excel(
     # ========================================================
 
     ai_review_required = False
-    ai_review_questions: List[Dict[str, Any]] = []
+    ai_review_questions: list[dict[str, Any]] = []
 
-    resolved_mappings: List[ColumnMapping] = []
+    resolved_mappings: list[ColumnMapping] = []
 
     for mapping in mappings:
 
@@ -277,14 +278,9 @@ def normalize_schedule_excel(
 
     mappings = resolved_mappings
 
-    mapping_by_source = {
-        mapping.source_column: mapping
-        for mapping in mappings
-    }
+    target_to_source: dict[str, ColumnMapping] = {}
 
-    target_to_source: Dict[str, ColumnMapping] = {}
-
-    warnings: List[str] = []
+    warnings: list[str] = []
 
     for mapping in mappings:
 
@@ -313,7 +309,7 @@ def normalize_schedule_excel(
                 mapping.target_field
             ] = mapping
 
-    missing_fields: List[MissingField] = []
+    missing_fields: list[MissingField] = []
 
     for field in REQUIRED_FIELDS:
 
@@ -330,7 +326,7 @@ def normalize_schedule_excel(
                 )
             )
 
-    normalized_rows: List[Dict[str, Any]] = []
+    normalized_rows: list[dict[str, Any]] = []
 
     if not missing_fields:
 
@@ -358,10 +354,7 @@ def normalize_schedule_excel(
         for mapping in mappings
     )
 
-    if missing_fields:
-        status = "needs_user_input"
-
-    elif ai_review_required:
+    if missing_fields or ai_review_required:
         status = "needs_user_input"
 
     elif requires_review:
@@ -377,10 +370,8 @@ def normalize_schedule_excel(
     # The API removes the uploaded temporary file in its finally
     # block, so the workbook MUST be explicitly closed first.
     # ============================================================
-    try:
+    with contextlib.suppress(Exception):
         workbook.close()
-    except Exception:
-        pass
 
     return NormalizationResult(
         status=status,

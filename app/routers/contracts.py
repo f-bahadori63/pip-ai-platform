@@ -5,7 +5,6 @@ from app.database.session import get_db
 from app.models.contract import Contract
 from app.schemas.contract import ContractCreate, ContractResponse
 
-
 router = APIRouter(
     prefix="/contracts",
     tags=["Contracts"]

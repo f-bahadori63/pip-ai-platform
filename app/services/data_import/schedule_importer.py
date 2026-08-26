@@ -1,7 +1,5 @@
 ﻿from __future__ import annotations
 
-import pandas as pd
-
 from sqlalchemy.orm import Session
 
 from app.models.schedule import ScheduleActivity
@@ -181,11 +179,9 @@ def import_schedule_excel(
                 )
             )
 
-            stale_deleted_count = stale_query.delete(
+            stale_query.delete(
                 synchronize_session=False
             )
-        else:
-            stale_deleted_count = 0
 
         db.commit()
 

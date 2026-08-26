@@ -1,0 +1,13 @@
+# Ruff configuration for PIP AI Platform
+target-version = "py312"
+line-length = 100
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "SIM", "DTZ"]
+ignore = [
+    "B008",  # FastAPI idiom: Depends() / File() in argument defaults
+]
+
+[lint.per-file-ignores]
+"**/__init__.py" = ["F403", "F405"]                    # intentional re-export modules
+"app/database/create_tables.py" = ["F403"]             # star import registers ORM models on Base.metadata

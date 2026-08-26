@@ -2,14 +2,13 @@
 
 import tempfile
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from .schedule_normalizer import normalize_schedule_excel
 from .schedule_importer import import_schedule_excel
-
+from .schedule_normalizer import normalize_schedule_excel
 
 CANONICAL_COLUMNS = [
     "activity_code",
@@ -41,7 +40,7 @@ def normalize_and_import_schedule_excel(
     db: Session,
     file_path: str,
     project_id: int,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
 
     source_path = Path(file_path)
 

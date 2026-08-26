@@ -1,8 +1,8 @@
 ﻿from sqlalchemy.orm import Session
 
 from app.models.project import Project
-from app.models.wbs import WBSItem
 from app.models.risk import Risk
+from app.models.wbs import WBSItem
 from app.services.ai.ollama_client import generate
 
 

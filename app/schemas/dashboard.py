@@ -1,4 +1,4 @@
-from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -13,7 +13,7 @@ class ProgressKPI(BaseModel):
 class ScheduleKPI(BaseModel):
 
     health: str
-    delay_index: Optional[float] = None
+    delay_index: float | None = None
     critical_activities: int
 
 
@@ -41,8 +41,8 @@ class AlertItem(BaseModel):
 class RecoveryAction(BaseModel):
 
     required: bool
-    priority: Optional[str] = None
-    recommendation: Optional[str] = None
+    priority: str | None = None
+    recommendation: str | None = None
 
 
 
@@ -58,6 +58,6 @@ class DashboardResponse(BaseModel):
 
     cost: CostKPI
 
-    alerts: List[AlertItem]
+    alerts: list[AlertItem]
 
     recovery: RecoveryAction

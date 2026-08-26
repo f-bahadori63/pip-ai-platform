@@ -20,9 +20,10 @@ It does not freely invent mappings.
 
 import json
 import re
-from typing import Any, Dict, Optional
+from typing import Any
 
 from app.services.ai.ollama_client import generate
+
 
 def _extract_json_object(text):
     """
@@ -143,7 +144,7 @@ ALLOWED_TARGETS = {
 }
 
 
-def _extract_json(text: str) -> Optional[Dict[str, Any]]:
+def _extract_json(text: str) -> dict[str, Any] | None:
 
     if not text:
         return None
@@ -218,12 +219,12 @@ def _safe_confidence(value: Any) -> float:
 
 def resolve_column_mapping(
     source_column: str,
-    candidate_target: Optional[str] = None,
-    confidence: Optional[float] = None,
-    reason: Optional[str] = None,
-    sample_values: Optional[list] = None,
-    all_columns: Optional[list] = None,
-) -> Dict[str, Any]:
+    candidate_target: str | None = None,
+    confidence: float | None = None,
+    reason: str | None = None,
+    sample_values: list | None = None,
+    all_columns: list | None = None,
+) -> dict[str, Any]:
 
     source_column = str(
         source_column or ""
@@ -250,9 +251,6 @@ def resolve_column_mapping(
     # STRONG DETERMINISTIC CANDIDATE
     # --------------------------------------------------------
 
-    candidate_confidence = _safe_confidence(
-        confidence
-    )
 
     # --------------------------------------------------------
     # AI SEMANTIC VALIDATION
@@ -494,8 +492,8 @@ If uncertain:
 
 def resolve_normalization_review(
     mappings: list,
-    rows: Optional[list] = None,
-) -> Dict[str, Any]:
+    rows: list | None = None,
+) -> dict[str, Any]:
 
     rows = rows or []
 

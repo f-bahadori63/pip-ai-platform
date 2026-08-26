@@ -2,20 +2,17 @@
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-
 from app.schemas.schedule import (
     ScheduleActivityCreate,
+    ScheduleActivityResponse,
     ScheduleActivityUpdate,
-    ScheduleActivityResponse
 )
-
 from app.services.schedule_service import (
     create_activity,
+    delete_activity,
     get_project_schedule,
     update_activity,
-    delete_activity
 )
-
 
 router = APIRouter(
     prefix="/schedule",

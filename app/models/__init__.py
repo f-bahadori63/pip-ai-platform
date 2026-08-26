@@ -1,18 +1,17 @@
-from .project import Project
-from .wbs import WBSItem
 from .contract import Contract
-from .risk import Risk
-from .schedule import ScheduleActivity
 from .cost.cost import ProjectCost
+from .project import Project
+from .risk import Risk
 from .risk_register.risk_register import ProjectRisk
-
+from .schedule import ScheduleActivity
+from .wbs import WBSItem
 
 __all__ = [
-    "Project",
-    "WBSItem",
     "Contract",
+    "Project",
+    "ProjectCost",
+    "ProjectRisk",
     "Risk",
     "ScheduleActivity",
-    "ProjectCost",
-    "ProjectRisk"
+    "WBSItem"
 ]

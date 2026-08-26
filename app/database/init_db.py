@@ -1,7 +1,5 @@
-﻿from app.database.session import engine
-from app.database.base import Base
-
-from app.models import Project, WBSItem, Contract
+﻿from app.database.base import Base
+from app.database.session import engine
 
 
 def init_database():

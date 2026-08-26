@@ -1,6 +1,4 @@
-﻿from app.schemas.dashboard_contract import (
-    ExecutiveDashboardContract
-)
+﻿from app.schemas.dashboard_contract import ExecutiveDashboardContract
 
 
 def map_dashboard_contract(

@@ -2,25 +2,16 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-
 from app.models.project import Project
-
-from app.services.ai.ollama_client import generate, MODEL_NAME
+from app.services.ai.executive_report import generate_executive_report
+from app.services.ai.ollama_client import MODEL_NAME, generate
 from app.services.ai.project_assistant import build_project_summary
-
+from app.services.ai.project_control_center import build_project_control_center
 from app.services.ai.schedule_analyzer import analyze_project_schedule
 from app.services.ai.schedule_recovery import generate_recovery_plan
-
-from app.services.project_control_kpi import calculate_project_kpis
-from app.services.project_alert_engine import generate_project_alerts
-
-from app.services.ai.executive_report import generate_executive_report
-from app.services.ai.project_control_center import (
-    build_project_control_center
-)
-
 from app.services.cost.cost_engine import calculate_cost_kpis
-
+from app.services.project_alert_engine import generate_project_alerts
+from app.services.project_control_kpi import calculate_project_kpis
 
 router = APIRouter(
     prefix="/ai",
