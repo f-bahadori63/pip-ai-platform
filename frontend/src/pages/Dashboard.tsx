@@ -45,6 +45,12 @@ type DashboardData = {
     remaining_cost: number;
     cost_variance: number;
     cost_health: string;
+    evm?: {
+      spi?: number | null;
+      cpi?: number | null;
+      eac?: number | null;
+      status?: string;
+    } | null;
   };
   alerts: Array<{
     level: string;
@@ -346,7 +352,11 @@ export default function Dashboard() {
           <KPI
             title="Cost Health"
             value={dashboard.cost.cost_health}
-            subtitle={`CV ${formatNumber(dashboard.cost.cost_variance)}`}
+            subtitle={
+              dashboard.cost.evm?.spi != null || dashboard.cost.evm?.cpi != null
+                ? `SPI ${dashboard.cost.evm.spi != null ? Number(dashboard.cost.evm.spi).toFixed(2) : "N/A"} · CPI ${dashboard.cost.evm.cpi != null ? Number(dashboard.cost.evm.cpi).toFixed(2) : "N/A"}`
+                : `CV ${formatNumber(dashboard.cost.cost_variance)}`
+            }
             icon={<AccountBalanceWalletIcon />}
             color={statusColor(dashboard.cost.cost_health)}
           />

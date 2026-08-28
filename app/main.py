@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.routers.ai import router as ai_router
+from app.routers.analysis import router as analysis_router
 from app.routers.contracts import router as contract_router
 from app.routers.cost import router as cost_router
 from app.routers.dashboard import router as dashboard_router
@@ -38,6 +39,7 @@ app.include_router(dashboard_router)
 app.include_router(cost_router)
 app.include_router(risk_register_router)
 app.include_router(demo_router)
+app.include_router(analysis_router)
 
 app.add_middleware(
     CORSMiddleware,

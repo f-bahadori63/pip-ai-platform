@@ -3,6 +3,7 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Grid,
   Paper,
@@ -16,9 +17,91 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import SavingsIcon from "@mui/icons-material/Savings";
 import PaidIcon from "@mui/icons-material/Paid";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+
+function EVMField({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <Box
+      sx={{
+        p: 1.5,
+        borderRadius: 2,
+        bgcolor: "rgba(255,255,255,0.06)",
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
+    >
+      <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.6)" }}>
+        {label}
+      </Typography>
+
+      <Typography variant="h6" sx={{ fontWeight: 700, color: "white", mt: 0.25 }}>
+        {value}
+      </Typography>
+    </Box>
+  );
+}
 
 import api from "../services/api";
 import { useProject } from "../context/ProjectContext";
+
+interface EvmData {
+  status?: string;
+  message?: string;
+  planned_progress?: number | null;
+  actual_progress?: number | null;
+  budget_source?: string;
+  bac?: number | null;
+  pv?: number | null;
+  ev?: number | null;
+  ac?: number | null;
+  sv?: number | null;
+  spi?: number | null;
+  cv?: number | null;
+  cpi?: number | null;
+  eac?: number | null;
+  etc?: number | null;
+  vac?: number | null;
+  tcpi?: number | null;
+}
+
+interface AnalysisReport {
+  project_id: number;
+  generated_at: string;
+  project: {
+    code: string;
+    name: string;
+    client?: string | null;
+    currency?: string | null;
+  };
+  wbs: {
+    created: number;
+    linked_activities: number;
+    total_items: number;
+    items: Array<{
+      id: number;
+      code: string;
+      name: string;
+      activity_count: number;
+    }>;
+  };
+  evm: EvmData;
+  schedule: {
+    health: string;
+    total_activities: number;
+    planned_progress?: number | null;
+    actual_progress?: number | null;
+    variance?: number | null;
+    delay_index?: number | null;
+    critical_activities: number;
+  };
+  alerts: Array<{ level: string; title: string; message: string }>;
+  recovery: { required: boolean; priority?: string | null; recommendation?: string | null };
+}
 
 interface CostData {
   planned_cost: number;
@@ -27,6 +110,7 @@ interface CostData {
   remaining_cost: number;
   cost_variance: number;
   cost_health: string;
+  evm?: EvmData;
   message?: string;
 }
 
@@ -142,6 +226,9 @@ export default function Cost() {
   const [earnedValue, setEarnedValue] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const [analysis, setAnalysis] = useState<AnalysisReport | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+
   const loadCost = useCallback(async (projectId: number) => {
     try {
       setLoadingCost(true);
@@ -166,6 +253,31 @@ export default function Cost() {
       setLoadingCost(false);
     }
   }, []);
+
+  const runAnalysis = useCallback(async (projectId: number) => {
+    try {
+      setAnalyzing(true);
+      setError("");
+
+      const response = await api.post<AnalysisReport>(
+        `/analysis/project/${projectId}/run`
+      );
+
+      setAnalysis(response.data);
+      await loadCost(projectId); // refresh EVM after analysis
+    } catch (err: any) {
+      console.error("Management analysis failed:", err);
+      setError(
+        String(
+          err?.response?.data?.detail ||
+            err?.message ||
+            "Management analysis failed."
+        )
+      );
+    } finally {
+      setAnalyzing(false);
+    }
+  }, [loadCost]);
 
   useEffect(() => {
     if (selectedProjectId === "") {
@@ -429,6 +541,160 @@ export default function Cost() {
               </Button>
             </Box>
           </Paper>
+
+          {cost?.evm && (
+            <Paper
+              sx={{
+                mt: 4,
+                p: 3,
+                borderRadius: 3,
+                boxShadow: 2,
+                background:
+                  "linear-gradient(145deg, rgba(30,41,59,0.98), rgba(15,23,42,0.98))",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                sx={{ justifyContent: "space-between", alignItems: "center", mb: 2 }}
+              >
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: "white" }}>
+                    EVM — Earned Value Management
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
+                    Computed automatically from schedule progress {cost.evm.budget_source === "contract_value" ? "and project contract value" : "and cost data"}
+                  </Typography>
+                </Box>
+
+                <Chip
+                  label={cost.evm.status ?? "N/A"}
+                  color={healthColor(cost.evm.status ?? "UNKNOWN")}
+                />
+              </Stack>
+
+              {cost.evm.message && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  {cost.evm.message}
+                </Alert>
+              )}
+
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="Planned Progress" value={cost.evm.planned_progress != null ? `${Number(cost.evm.planned_progress).toFixed(1)}%` : "N/A"} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="Actual Progress" value={cost.evm.actual_progress != null ? `${Number(cost.evm.actual_progress).toFixed(1)}%` : "N/A"} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="PV (Planned Value)" value={formatNumber(cost.evm.pv ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="EV (Earned Value)" value={formatNumber(cost.evm.ev ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="AC (Actual Cost)" value={formatNumber(cost.evm.ac ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="SV (Schedule Variance)" value={formatNumber(cost.evm.sv ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="SPI" value={cost.evm.spi != null ? Number(cost.evm.spi).toFixed(3) : "N/A"} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="CV (Cost Variance)" value={formatNumber(cost.evm.cv ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="CPI" value={cost.evm.cpi != null ? Number(cost.evm.cpi).toFixed(3) : "N/A"} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="EAC" value={formatNumber(cost.evm.eac ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="ETC" value={formatNumber(cost.evm.etc ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="VAC" value={formatNumber(cost.evm.vac ?? 0)} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="TCPI" value={cost.evm.tcpi != null ? Number(cost.evm.tcpi).toFixed(3) : "N/A"} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <EVMField label="BAC" value={formatNumber(cost.evm.bac ?? 0)} />
+                </Grid>
+              </Grid>
+            </Paper>
+          )}
+
+          <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              variant="outlined"
+              startIcon={<AutoAwesomeIcon />}
+              disabled={analyzing || !selectedProjectId}
+              onClick={() => runAnalysis(selectedProjectId)}
+            >
+              {analyzing ? "Analyzing..." : "Run Management Analysis"}
+            </Button>
+          </Box>
+
+          {analysis && (
+            <Paper sx={{ mt: 3, p: 3, borderRadius: 3, boxShadow: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                Management Intelligence — {analysis.project.code} / {analysis.project.name}
+              </Typography>
+
+              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2 }}>
+                <Chip
+                  label={`Schedule: ${analysis.schedule.health}`}
+                  color={healthColor(analysis.schedule.health)}
+                  size="small"
+                />
+                <Chip
+                  label={`Activities: ${analysis.schedule.total_activities}`}
+                  size="small"
+                />
+                <Chip
+                  label={`Variance: ${analysis.schedule.variance != null ? Number(analysis.schedule.variance).toFixed(1) : "N/A"}%`}
+                  size="small"
+                />
+                <Chip
+                  label={`Critical: ${analysis.schedule.critical_activities}`}
+                  color="warning"
+                  size="small"
+                />
+                <Chip
+                  label={`WBS items: ${analysis.wbs.total_items} (${analysis.wbs.created} auto-created)`}
+                  size="small"
+                />
+              </Stack>
+
+              {analysis.evm?.status && (
+                <Alert severity={healthColor(analysis.evm.status) === "success" ? "success" : "warning"} sx={{ mb: 2 }}>
+                  EVM: SPI {analysis.evm.spi != null ? Number(analysis.evm.spi).toFixed(3) : "N/A"} ·
+                  CPI {analysis.evm.cpi != null ? Number(analysis.evm.cpi).toFixed(3) : "N/A"} ·
+                  EAC {formatNumber(analysis.evm.eac ?? 0)}
+                </Alert>
+              )}
+
+              {analysis.alerts.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  {analysis.alerts.map((alert, index) => (
+                    <Alert key={index} severity={healthColor(alert.level) === "error" ? "error" : "warning"} sx={{ mb: 1 }}>
+                      <strong>{alert.title}:</strong> {alert.message}
+                    </Alert>
+                  ))}
+                </Box>
+              )}
+
+              {analysis.recovery.required && (
+                <Alert severity="error">
+                  <strong>Recovery ({analysis.recovery.priority ?? "HIGH"}):</strong>{" "}
+                  {analysis.recovery.recommendation ?? "Recovery plan not generated."}
+                </Alert>
+              )}
+            </Paper>
+          )}
         </>
       )}
     </Box>

@@ -26,6 +26,7 @@ class CostKPI(BaseModel):
     remaining_cost: float = 0
     cost_variance: float = 0
     cost_health: str = "UNKNOWN"
+    evm: dict | None = None
 
 
 
