@@ -221,21 +221,31 @@ export default function Schedule() {
         response?.data ??
         {};
 
-      const inserted =
-        Number(imported.inserted ?? 0);
+      const inserted = Number(
+        imported.created_count ?? imported.inserted ?? 0
+      );
 
-      const updated =
-        Number(imported.updated ?? 0);
+      const updated = Number(
+        imported.updated_count ?? imported.updated ?? 0
+      );
 
-      const total =
-        Number(
-          imported.total ??
-          imported.total_activities ??
-          inserted + updated
-        );
+      const total = Number(
+        imported.imported_count ??
+        imported.total ??
+        imported.total_activities ??
+        inserted + updated
+      );
+
+      const wbs = imported.wbs as
+        | { total_items?: number; replaced_count?: number }
+        | undefined;
+
+      const wbsMessage = wbs
+        ? ` WBS replaced with ${Number(wbs.total_items ?? 0)} items from this file (${Number(wbs.replaced_count ?? 0)} old items removed).`
+        : "";
 
       setUploadMessage(
-        `Excel uploaded successfully. ${total || inserted + updated} activities processed.`
+        `Excel uploaded successfully. ${total} activities processed.${wbsMessage}`
       );
 
       await loadSchedule(projectId);

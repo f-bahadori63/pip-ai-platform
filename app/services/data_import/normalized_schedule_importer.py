@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import tempfile
 from pathlib import Path
@@ -13,7 +13,8 @@ from .schedule_normalizer import normalize_schedule_excel
 CANONICAL_COLUMNS = [
     "activity_code",
     "activity_name",
-    "wbs_id",
+    "wbs_code",
+    "wbs_name",
     "duration_days",
     "progress_percent",
     "status",

@@ -1,10 +1,13 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
 from app.models.schedule import ScheduleActivity
 from app.services.data_import.schedule_normalizer import (
     normalize_schedule_excel,
+)
+from app.services.wbs_import_service import (
+    replace_project_wbs_from_schedule,
 )
 
 
@@ -96,7 +99,10 @@ def import_schedule_excel(
                     project_id=project_id,
                     activity_code=activity_code,
                     activity_name=activity_name,
-                    wbs_id=row.get("wbs_id"),
+                    # The workbook's WBS value is a source code, not a
+                    # database foreign key. It is resolved after all rows are
+                    # imported and the old project WBS has been replaced.
+                    wbs_id=None,
                     duration_days=row.get("duration_days"),
                     progress_percent=(
                         row.get("progress_percent")
@@ -121,7 +127,8 @@ def import_schedule_excel(
             else:
 
                 activity.activity_name = activity_name
-                activity.wbs_id = row.get("wbs_id")
+                # Re-linked to the new project-scoped WBS below.
+                activity.wbs_id = None
                 activity.duration_days = row.get(
                     "duration_days"
                 )
@@ -168,6 +175,8 @@ def import_schedule_excel(
             and str(row.get("activity_code")).strip()
         }
 
+        removed_count = 0
+
         if incoming_activity_codes:
             stale_query = (
                 db.query(ScheduleActivity)
@@ -179,9 +188,21 @@ def import_schedule_excel(
                 )
             )
 
-            stale_query.delete(
+            removed_count = stale_query.delete(
                 synchronize_session=False
             )
+
+        db.flush()
+
+        # SOURCE OF TRUTH: a successful upload replaces the selected
+        # project's previous WBS. The new WBS is built from wbs_code /
+        # wbs_name in this workbook, with deterministic activity-code
+        # derivation as a fallback.
+        wbs_result = replace_project_wbs_from_schedule(
+            db=db,
+            project_id=project_id,
+            normalized_rows=result.normalized_rows,
+        )
 
         db.commit()
 
@@ -190,12 +211,14 @@ def import_schedule_excel(
             "imported_count": imported_count,
             "created_count": created_count,
             "updated_count": updated_count,
+            "removed_count": int(removed_count or 0),
             "status": "completed",
             "imported": True,
             "normalization_status": "ready",
             "normalized_row_count": len(
                 result.normalized_rows
             ),
+            "wbs": wbs_result,
         }
 
     except Exception:

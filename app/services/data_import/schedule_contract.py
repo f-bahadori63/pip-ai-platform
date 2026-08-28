@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 SCHEDULE_CONTRACT: dict[str, dict] = {
     "activity_code": {
@@ -107,30 +107,69 @@ SCHEDULE_CONTRACT: dict[str, dict] = {
         ],
     },
 
-    "wbs_id": {
+    "wbs_code": {
         "required": False,
-        "type": "integer",
-        "semantic_role": "hierarchy",
+        "type": "string",
+        "semantic_role": "hierarchy_identifier",
         "aliases": [
+            "wbs_code",
+            "wbs code",
+            "wbs cod",
             "wbs_id",
             "wbs id",
             "wbs",
-            "wbs code",
-            "wbs cod",
-            "wbs_code",
             "wbs number",
             "wbs no",
-            "wbs item",
-            "work breakdown structure",
-            "work breakdown",
+            "work breakdown structure code",
+            "work breakdown code",
         ],
         "positive_terms": [
             "wbs",
             "breakdown",
             "hierarchy",
             "structure",
+            "code",
+            "id",
+            "number",
         ],
         "negative_terms": [
+            "name",
+            "title",
+            "description",
+            "activity",
+            "task",
+            "duration",
+            "progress",
+            "status",
+        ],
+    },
+
+    "wbs_name": {
+        "required": False,
+        "type": "string",
+        "semantic_role": "hierarchy_description",
+        "aliases": [
+            "wbs_name",
+            "wbs name",
+            "wbs title",
+            "wbs description",
+            "work package name",
+            "work package title",
+            "work breakdown structure name",
+        ],
+        "positive_terms": [
+            "wbs",
+            "breakdown",
+            "hierarchy",
+            "structure",
+            "name",
+            "title",
+            "description",
+        ],
+        "negative_terms": [
+            "code",
+            "id",
+            "number",
             "activity",
             "task",
             "duration",

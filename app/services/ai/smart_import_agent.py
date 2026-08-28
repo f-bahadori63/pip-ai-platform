@@ -134,7 +134,8 @@ def _validate_agent_decision(result, allowed_targets):
 ALLOWED_TARGETS = {
     "activity_code",
     "activity_name",
-    "wbs_id",
+    "wbs_code",
+    "wbs_name",
     "duration_days",
     "progress_percent",
     "status",
@@ -269,7 +270,7 @@ Sample values:
 {sample_values}
 
 Available canonical fields:
-activity_code, activity_name, wbs_id, duration_days,
+activity_code, activity_name, wbs_code, wbs_name, duration_days,
 progress_percent, status, start_date, finish_date,
 responsible_party
 

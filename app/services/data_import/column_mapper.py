@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import re
 from difflib import SequenceMatcher
@@ -174,10 +174,12 @@ SMART_EXCEL_ALIASES = {
     "description": "activity_name",
     "activity description": "activity_name",
 
-    "wbs cod": "wbs_id",
-    "wbs code": "wbs_id",
-    "wbs id": "wbs_id",
-    "wbs number": "wbs_id",
+    "wbs cod": "wbs_code",
+    "wbs code": "wbs_code",
+    "wbs id": "wbs_code",
+    "wbs number": "wbs_code",
+    "wbs name": "wbs_name",
+    "wbs title": "wbs_name",
 
     "duration days": "duration_days",
     "duration day": "duration_days",
