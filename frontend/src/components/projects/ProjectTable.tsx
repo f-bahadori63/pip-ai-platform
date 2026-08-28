@@ -1,4 +1,5 @@
-﻿import {
+import {
+    Button,
     Paper,
     Table,
     TableBody,
@@ -23,14 +24,20 @@
     
     interface Props {
     projects: Project[];
+    selectedProjectId: number | "";
+    onSelect: (id: number) => void;
     }
     
-    export default function ProjectTable({ projects }: Props) {
+    export default function ProjectTable({
+      projects,
+      selectedProjectId,
+      onSelect,
+    }: Props) {
     return (
     <TableContainer
     component={Paper}
     sx={{ borderRadius: 3 }}
-    > <Table> <TableHead> <TableRow> <TableCell><b>Code</b></TableCell> <TableCell><b>Project Name</b></TableCell> <TableCell><b>Client</b></TableCell> <TableCell align="right"><b>Contract Value</b></TableCell> <TableCell align="center"><b>Status</b></TableCell> </TableRow> </TableHead>
+    > <Table> <TableHead> <TableRow> <TableCell><b>Code</b></TableCell> <TableCell><b>Project Name</b></TableCell> <TableCell><b>Client</b></TableCell> <TableCell align="right"><b>Contract Value</b></TableCell> <TableCell align="center"><b>Status</b></TableCell> <TableCell align="center"><b>Current</b></TableCell> </TableRow> </TableHead>
     
     
         <TableBody>
@@ -60,6 +67,25 @@
               <TableCell align="center">
                 <StatusChip status={project.status} />
               </TableCell>
+
+              <TableCell align="center">
+                {Number(selectedProjectId) === Number(project.id) ? (
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "success.main", fontWeight: 600 }}
+                  >
+                    ✓ Selected
+                  </Typography>
+                ) : (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => onSelect(project.id)}
+                  >
+                    Select
+                  </Button>
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -68,5 +94,3 @@
         
     );
     }
-
-

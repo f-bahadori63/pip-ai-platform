@@ -1,4 +1,4 @@
-﻿import {
+import {
   AppBar,
   Toolbar,
   Typography,
@@ -10,6 +10,8 @@
 
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
+
+import ProjectSelector from "./ProjectSelector";
 
 const drawerWidth = 260;
 
@@ -56,6 +58,8 @@ export default function Topbar() {
             Search...
           </Typography>
         </Box>
+
+        <ProjectSelector />
 
         <Box sx={{ flexGrow: 1 }} />
 

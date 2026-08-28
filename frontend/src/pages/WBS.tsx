@@ -1,12 +1,6 @@
-﻿import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
-
-type Project = {
-  id: number;
-  name?: string;
-  code?: string;
-  description?: string;
-};
+import { useProject } from "../context/ProjectContext";
 
 type WBSItem = {
   id: number;
@@ -18,74 +12,19 @@ type WBSItem = {
 };
 
 export default function WBS() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projectId, setProjectId] = useState<number | "">("");
+  /*
+   * The selected project comes from the global project context
+   * (single source of truth, shared with Dashboard / Schedule /
+   * Documents / Cost through the top-bar selector).
+   */
+  const {
+    selectedProjectId: projectId,
+    selectedProject,
+  } = useProject();
+
   const [items, setItems] = useState<WBSItem[]>([]);
-  const [loadingProjects, setLoadingProjects] = useState(true);
   const [loadingWbs, setLoadingWbs] = useState(false);
   const [error, setError] = useState("");
-
-  /*
-   * Load available projects.
-   *
-   * Project selection is the only source of project scope.
-   * No project ID is hardcoded.
-   */
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadProjects = async () => {
-      try {
-        setLoadingProjects(true);
-        setError("");
-
-        const response = await api.get("/projects/");
-        const data = Array.isArray(response.data)
-          ? response.data
-          : [];
-
-        if (cancelled) {
-          return;
-        }
-
-        setProjects(data);
-
-        if (data.length > 0) {
-          setProjectId((current) => {
-            if (
-              current !== "" &&
-              data.some((project: Project) => project.id === current)
-            ) {
-              return current;
-            }
-
-            return data[0].id;
-          });
-        } else {
-          setProjectId("");
-          setItems([]);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.error("Failed to load projects:", err);
-          setError("Failed to load projects.");
-          setProjects([]);
-          setProjectId("");
-          setItems([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingProjects(false);
-        }
-      }
-    };
-
-    loadProjects();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   /*
    * Load WBS strictly for the selected project.
@@ -138,10 +77,6 @@ export default function WBS() {
     loadWbs(projectId);
   }, [projectId, loadWbs]);
 
-  const selectedProject = projects.find(
-    (project) => project.id === projectId
-  );
-
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -154,61 +89,21 @@ export default function WBS() {
         </p>
       </div>
 
-      <div className="mb-6 rounded-lg border p-4">
-        <label
-          htmlFor="wbs-project-selector"
-          className="mb-2 block text-sm font-medium"
-        >
-          Project
-        </label>
-
-        <select
-          id="wbs-project-selector"
-          value={projectId === "" ? "" : String(projectId)}
-          onChange={(event) => {
-            const value = event.target.value;
-
-            setProjectId(
-              value === "" ? "" : Number(value)
-            );
-          }}
-          disabled={loadingProjects}
-          className="w-full rounded-md border px-3 py-2"
-        >
-          {loadingProjects && (
-            <option value="">
-              Loading projects...
-            </option>
-          )}
-
-          {!loadingProjects && projects.length === 0 && (
-            <option value="">
-              No projects found
-            </option>
-          )}
-
-          {projects.map((project) => (
-            <option
-              key={project.id}
-              value={project.id}
-            >
-              {project.code
-                ? `${project.code} - ${project.name ?? "Project"}`
-                : project.name ?? `Project ${project.id}`}
-            </option>
-          ))}
-        </select>
-      </div>
-
       {selectedProject && (
         <div className="mb-4 text-sm text-gray-600">
           Selected Project:{" "}
           <strong>
-            {selectedProject.code
-              ? `${selectedProject.code} - `
+            {selectedProject.project_code
+              ? `${selectedProject.project_code} - `
               : ""}
             {selectedProject.name ?? selectedProject.id}
           </strong>
+        </div>
+      )}
+
+      {!selectedProject && (
+        <div className="mb-4 text-sm text-gray-500">
+          No projects available. Select a project from the top bar.
         </div>
       )}
 

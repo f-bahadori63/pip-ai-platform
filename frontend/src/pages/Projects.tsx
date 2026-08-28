@@ -1,7 +1,8 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Typography, Box } from "@mui/material";
 
 import api from "../services/api";
+import { useProject } from "../context/ProjectContext";
 import ProjectTable from "../components/projects/ProjectTable";
 
 interface Project {
@@ -16,6 +17,7 @@ status: string;
 
 export default function Projects() {
 const [projects, setProjects] = useState<Project[]>([]);
+const { selectedProjectId, selectProject } = useProject();
 
 useEffect(() => {
 api
@@ -40,7 +42,11 @@ Projects </Typography>
     Enterprise Project Portfolio Management
   </Typography>
 
-  <ProjectTable projects={projects} />
+  <ProjectTable
+    projects={projects}
+    selectedProjectId={selectedProjectId}
+    onSelect={selectProject}
+  />
 </Box>
 
 

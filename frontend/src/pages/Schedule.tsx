@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Box,
@@ -8,8 +8,6 @@ import {
   Chip,
   CircularProgress,
   LinearProgress,
-  MenuItem,
-  Select,
   Stack,
   Table,
   TableBody,
@@ -21,14 +19,7 @@ import {
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import api, { uploadScheduleExcel } from "../services/api";
-
-interface Project {
-  id: number;
-  project_code?: string;
-  name: string;
-  client?: string;
-  status?: string;
-}
+import { useProject } from "../context/ProjectContext";
 
 interface ScheduleActivity {
   id: number;
@@ -88,50 +79,21 @@ function statusColor(
 }
 
 export default function Schedule() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projectId, setProjectId] = useState<number | "">(1);
+  /*
+   * Project selection comes from the global project context
+   * (top-bar selector) — no hardcoded project ID. All schedule
+   * views follow the selected project.
+   */
+  const {
+    selectedProjectId: projectId,
+    selectedProject,
+  } = useProject();
 
   const [activities, setActivities] = useState<ScheduleActivity[]>([]);
-  const [loadingProjects, setLoadingProjects] = useState(true);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
   const [uploadingExcel, setUploadingExcel] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [error, setError] = useState("");
-
-  const loadProjects = useCallback(async () => {
-    try {
-      setLoadingProjects(true);
-      setError("");
-
-      const response = await api.get("/projects/");
-
-      const data = Array.isArray(response.data)
-        ? response.data
-        : Array.isArray(response.data?.projects)
-          ? response.data.projects
-          : [];
-
-      setProjects(data);
-
-      if (data.length > 0) {
-        const projectOne = data.find(
-          (project: Project) => project.id === 1
-        );
-
-        if (projectOne) {
-          setProjectId(1);
-        } else if (projectId === "") {
-          setProjectId(data[0].id);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to load projects:", err);
-      setProjects([]);
-      setError("Failed to load projects.");
-    } finally {
-      setLoadingProjects(false);
-    }
-  }, [projectId]);
 
   const loadSchedule = useCallback(async (selectedProjectId: number) => {
     try {
@@ -162,10 +124,6 @@ export default function Schedule() {
       setLoadingSchedule(false);
     }
   }, []);
-
-  useEffect(() => {
-    loadProjects();
-  }, [loadProjects]);
 
   useEffect(() => {
     if (projectId !== "") {
@@ -286,10 +244,6 @@ export default function Schedule() {
     };
   }, [activities]);
 
-  const selectedProject = projects.find(
-    (project) => project.id === projectId
-  );
-
   return (
     <Box sx={{ p: 3 }}>
       <Stack
@@ -322,37 +276,6 @@ export default function Schedule() {
           spacing={1}
           sx={{ alignItems: "center" }}
         >
-          <Select
-            size="small"
-            value={projectId === "" ? "" : String(projectId)}
-            disabled={loadingProjects || loadingSchedule}
-            onChange={(event) => {
-              const value = event.target.value;
-
-              setProjectId(
-                value === "" ? "" : Number(value)
-              );
-            }}
-            sx={{ minWidth: 260 }}
-          >
-            {projects.length === 0 && (
-              <MenuItem value="">
-                No projects
-              </MenuItem>
-            )}
-
-            {projects.map((project) => (
-              <MenuItem
-                key={project.id}
-                value={String(project.id)}
-              >
-                {project.project_code
-                  ? `${project.project_code} — ${project.name}`
-                  : project.name}
-              </MenuItem>
-            ))}
-          </Select>
-
           <Button
             variant="outlined"
             startIcon={<RefreshIcon />}

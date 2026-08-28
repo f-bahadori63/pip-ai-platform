@@ -1,75 +1,29 @@
-﻿import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
-  MenuItem,
-  Select,
   Typography,
 } from "@mui/material";
 import api from "../services/api";
-
-interface Project {
-  id: number;
-  project_code: string;
-  name: string;
-  client?: string;
-  status?: string;
-}
+import { useProject } from "../context/ProjectContext";
 
 interface UploadResult {
   [key: string]: unknown;
 }
 
 export default function Documents() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projectId, setProjectId] = useState<number | "">("");
-  const [loadingProjects, setLoadingProjects] = useState(true);
+  const {
+    selectedProjectId: projectId,
+    selectedProject,
+    loading: loadingProjects,
+  } = useProject();
+
   const [file, setFile] = useState<File | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<UploadResult | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    const loadProjects = async () => {
-      try {
-        setLoadingProjects(true);
-        setError("");
-
-        const response = await api.get("/projects/");
-
-        const data = Array.isArray(response.data)
-          ? response.data
-          : Array.isArray(response.data?.projects)
-            ? response.data.projects
-            : [];
-
-        if (active) {
-          setProjects(data);
-        }
-      } catch (err) {
-        console.error("Failed to load projects:", err);
-
-        if (active) {
-          setProjects([]);
-          setError("Failed to load projects.");
-        }
-      } finally {
-        if (active) {
-          setLoadingProjects(false);
-        }
-      }
-    };
-
-    loadProjects();
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const handleProcess = async () => {
     if (projectId === "") {
@@ -136,10 +90,6 @@ export default function Documents() {
           backgroundColor: "background.paper",
         }}
       >
-        <Typography sx={{ fontWeight: 600, mb: 1 }}>
-          Project
-        </Typography>
-
         {loadingProjects ? (
           <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             <CircularProgress size={20} sx={{ mr: 1 }} />
@@ -147,47 +97,30 @@ export default function Documents() {
           </Box>
         ) : (
           <Box sx={{ mb: 3 }}>
-            <Select
-              fullWidth
-              value={projectId === "" ? "" : String(projectId)}
-              displayEmpty
-              disabled={processing}
-              onChange={(event) => {
-                const value = event.target.value;
-                setProjectId(value === "" ? "" : Number(value));
-                setFile(null);
-                setResult(null);
-                setError("");
-              }}
-            >
-              <MenuItem value="">
-                <em>Select a project</em>
-              </MenuItem>
-
-              {projects.map((project) => (
-                <MenuItem
-                  key={project.id}
-                  value={String(project.id)}
-                >
-                  {project.project_code} — {project.name}
-                </MenuItem>
-              ))}
-            </Select>
-
-            {projectId !== "" && (
-              <Typography
-                variant="body2"
-                sx={{ mt: 1 }}
-              >
-                Selected Project ID: {projectId}
-              </Typography>
-            )}
-
-            {projects.length === 0 && (
-              <Alert severity="warning" sx={{ mt: 2 }}>
-                No projects found.
-              </Alert>
-            )}
+            <Typography variant="body1">
+              {selectedProject ? (
+                <>
+                  Selected project:{" "}
+                  <strong>
+                    {selectedProject.project_code
+                      ? `${selectedProject.project_code} — `
+                      : ""}
+                    {selectedProject.name ?? `Project ${selectedProject.id}`}
+                  </strong>{" "}
+                  <Typography
+                    component="span"
+                    variant="caption"
+                    sx={{ ml: 1, color: "text.secondary" }}
+                  >
+                    (change via the project selector in the top bar)
+                  </Typography>
+                </>
+              ) : (
+                <Alert severity="warning">
+                  No projects found. Select a project from the top bar.
+                </Alert>
+              )}
+            </Typography>
           </Box>
         )}
 

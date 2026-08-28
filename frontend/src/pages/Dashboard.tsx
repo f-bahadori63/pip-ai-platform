@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+
+import { useProject } from "../context/ProjectContext";
 import {
   Alert,
   Box,
@@ -160,40 +162,10 @@ function KPI({
 }
 
 export default function Dashboard() {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<number | "">("");
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadProjects = async () => {
-      try {
-        const response = await api.get("/projects/");
-        const data = Array.isArray(response.data) ? response.data : [];
-
-        if (!cancelled) {
-          setProjects(data);
-
-          if (data.length > 0) {
-            setSelectedProjectId(Number(data[0].id));
-          }
-        }
-      } catch (error) {
-        console.error("Failed to load projects:", error);
-
-        if (!cancelled) {
-          setProjects([]);
-          setSelectedProjectId("");
-        }
-      }
-    };
-
-    loadProjects();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const {
+    selectedProjectId,
+    selectedProject,
+  } = useProject();
 
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [error, setError] = useState("");
@@ -269,35 +241,23 @@ export default function Dashboard() {
 
   return (
     <Box sx={{ pb: 5 }}>
-      {/* PROJECT SELECTOR */}
-      <Box sx={{ mb: 3, display: "flex", alignItems: "center", gap: "12px" }}>
-        <label htmlFor="dashboard-project-selector" style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>
-          Project
-        </label>
-        <select
-          id="dashboard-project-selector"
-          value={selectedProjectId === "" ? "" : String(selectedProjectId)}
-          onChange={(event) => {
-            const value = event.target.value;
-            setSelectedProjectId(value === "" ? "" : Number(value));
-          }}
-          style={{
-            background: "#1e293b",
-            color: "white",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: "8px",
-            padding: "6px 10px",
-            fontSize: "14px",
-          }}
-        >
-          <option value="">Select project</option>
-          {projects.map((project) => (
-            <option key={project.id} value={String(project.id)}>
-              {project.project_code ?? project.code ?? project.name ?? project.id}
-            </option>
-          ))}
-        </select>
-      </Box>
+      {/* SELECTED PROJECT (global selector lives in the top bar) */}
+      {selectedProject && (
+        <Box sx={{ mb: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "rgba(255,255,255,0.55)" }}
+          >
+            Selected project:{" "}
+            <strong style={{ color: "rgba(255,255,255,0.85)" }}>
+              {selectedProject.project_code
+                ? `${selectedProject.project_code} — `
+                : ""}
+              {selectedProject.name ?? `Project ${selectedProject.id}`}
+            </strong>
+          </Typography>
+        </Box>
+      )}
 
       {/* HEADER */}
       <Stack

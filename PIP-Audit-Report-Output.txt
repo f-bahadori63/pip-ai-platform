@@ -1,0 +1,535 @@
+﻿
+================================================================
+ 0. ROOT & TIMESTAMP
+================================================================
+Path checked: D:\PIP\Projects\pip-ai-platform
+Timestamp: 2026-08-28 11:48:04
+
+================================================================
+ 1. GIT STATE
+================================================================
+Is a git repo: True
+
+--- Current branch ---
+main
+
+--- All local + remote branches ---
+  backup-before-large-file-cleanup-20260810-141036
+* main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
+
+
+--- Last 20 commits (all branches, all refs) ---
+e459c38 (HEAD -> main, origin/main, origin/HEAD) chore: project hygiene - CI, LICENSE, env secrets, deps, lint fixes
+aafc905 Merge remote-tracking branch 'origin/main'
+5e7ff24 chore: project hygiene - CI, README, LICENSE, env secrets, deps
+1818033 chore: update sample schedule data
+99cec9d Update README.md
+e1c5f52 fix(dashboard): resolve build error, add project selector, reload on project change
+6780911 feat(import): add Smart Import Agent normalization pipeline
+3f40e32 feat(schedule): make Excel schedule replacement atomic
+18d6db9 feat(kpi): establish weighted KPI single source of truth
+f8aa48a feat: stabilize Sprint 06 AI grounding and 1.5B model
+7e65b0e Create README.md
+8386e09 fix: stabilize MVP documents, CORS and runtime dependencies
+480cd5c feat: add Schedule Intelligence MVP
+aa01ddc PIP MVP 1.0 - Dashboard Projects WBS Ready
+68696e0 chore: protect local artifacts and offline packages
+539c168 (refs/stash) On main: PIP-pre-large-file-history-cleanup-20260810-141402
+2347319 index on main: 908afca feat: finalize PIP project intelligence modules and schedule import idempotency
+bdc6e77 untracked files on main: 908afca feat: finalize PIP project intelligence modules and schedule import idempotency
+908afca (backup-before-large-file-cleanup-20260810-141036) feat: finalize PIP project intelligence modules and schedule import idempotency
+535cc0b feat: finalize PIP project intelligence modules and schedule import idempotency
+
+
+--- Searching for commit 6780911 (approved Smart Import commit) ---
+git cat-file -t 6780911 => commit
+
+--- FOUND. Commit details: ---
+commit 678091170aad76f55f4949244dd40e791a627292
+Author: Farzad <alpari.bahadori@gmail.com>
+Date:   Tue Aug 25 18:04:25 2026 +0330
+
+    feat(import): add Smart Import Agent normalization pipeline
+
+ app/services/ai/smart_import_agent.py              | 647 +++++++++++++++++++++
+ app/services/data_import/column_mapper.py          | 520 +++++++++++++++++
+ app/services/data_import/normalization_models.py   |  38 ++
+ .../data_import/normalized_schedule_importer.py    | 117 ++++
+ app/services/data_import/schedule_contract.py      | 375 ++++++++++++
+ app/services/data_import/schedule_normalizer.py    | 404 +++++++++++++
+ app/services/data_import/smart_import_contract.py  |  59 ++
+ 7 files changed, 2160 insertions(+)
+
+
+--- Reflog (in case commit was made then reset/orphaned) ---
+
+6780911 refs/heads/main@{7}: commit: feat(import): add Smart Import Agent normalization pipeline
+6780911 HEAD@{20}: commit: feat(import): add Smart Import Agent normalization pipeline
+
+
+
+
+--- Searching entire commit history for the word 'smart_import' or 'Smart Import' in commit messages ---
+6780911 feat(import): add Smart Import Agent normalization pipeline
+
+
+--- Searching entire history (all commits, all branches) for files ever named schedule_normalizer.py / smart_import_agent.py / column_mapper.py ---
+
+app/services/ai/smart_import_agent.py
+app/services/data_import/column_mapper.py
+app/services/data_import/normalization_models.py
+app/services/data_import/normalized_schedule_importer.py
+app/services/data_import/schedule_contract.py
+app/services/data_import/schedule_normalizer.py
+app/services/data_import/smart_import_contract.py
+
+
+
+
+--- git status (uncommitted local changes) ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+
+--- Remote(s) configured ---
+origin	https://github.com/f-bahadori63/pip-ai-platform.git (fetch)
+origin	https://github.com/f-bahadori63/pip-ai-platform.git (push)
+
+
+================================================================
+ 2. THE 7 'APPROVED PRODUCTION FILES' FROM PIP_MASTER SECTION 9
+================================================================
+[FOUND ] app\services\ai\smart_import_agent.py
+[FOUND ] app\services\data_import\column_mapper.py
+[FOUND ] app\services\data_import\normalization_models.py
+[FOUND ] app\services\data_import\normalized_schedule_importer.py
+[FOUND ] app\services\data_import\schedule_contract.py
+[FOUND ] app\services\data_import\schedule_normalizer.py
+[FOUND ] app\services\data_import\smart_import_contract.py
+
+================================================================
+ 3. WHAT ACTUALLY EXISTS IN app/services/data_import AND app/services/ai
+================================================================
+--- app/services/data_import/ ---
+
+Name                            Length LastWriteTime       
+----                            ------ -------------       
+column_mapper.py                 14222 8/26/2026 3:57:43 PM
+excel_profiler.py                 1811 8/26/2026 3:57:43 PM
+normalization_models.py            929 8/26/2026 3:57:43 PM
+normalized_schedule_importer.py   2923 8/26/2026 3:57:43 PM
+schedule_contract.py              9060 8/26/2026 3:57:43 PM
+schedule_importer.py              6898 8/26/2026 3:57:43 PM
+schedule_normalizer.py           10810 8/26/2026 3:57:43 PM
+smart_import_contract.py          1268 8/26/2026 3:28:20 PM
+__init__.py                          0 8/8/2026 2:53:51 PM 
+
+
+
+--- app/services/ai/ ---
+
+Name                      Length LastWriteTime       
+----                      ------ -------------       
+executive_report.py          511 8/7/2026 4:11:52 PM 
+ollama_client.py            1000 8/26/2026 3:28:20 PM
+project_assistant.py        2342 8/26/2026 3:57:43 PM
+project_context.py          5557 8/26/2026 3:57:43 PM
+project_control_center.py   1264 8/26/2026 3:57:43 PM
+project_summary.py          7493 8/26/2026 3:28:20 PM
+schedule_analyzer.py        4528 8/26/2026 3:57:43 PM
+schedule_recovery.py       10643 8/26/2026 3:28:20 PM
+smart_import_agent.py      15561 8/26/2026 3:57:43 PM
+
+
+
+
+================================================================
+ 4. TEXT SEARCH FOR KEY ARCHITECTURE MARKERS (whole repo)
+================================================================
+
+Pattern 'smart_import' FOUND in:
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\schedule_normalizer.py:9
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\schedule_normalizer.py:387
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\smart_import_contract.py:10
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_AI_REVIEW_ROUTING_20260825_173608\schedule_normalizer.py:10
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_AI_REVIEW_ROUTING_20260825_173608\schedule_normalizer.py:396
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\schedule_normalizer.py:10
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\schedule_normalizer.py:396
+
+
+Pattern 'needs_review' FOUND in:
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\normalized_schedule_importer.py:54
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\schedule_normalizer.py:361
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\smart_import_contract.py:40
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\smart_import_contract.py:41
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\smart_import_contract.py:55
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08_normalization_test\_sprint08_complete_regression.py:28
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_adapter_contract_test.py:127
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_adapter_contract_test.py:305
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_adapter_contract_test.py:307
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_adapter_contract_test.py:317
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_adapter_contract_test.py:321
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_adapter_contract_test.py:325
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_real_importer_integration_test.py:170
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_real_importer_integration_test.py:209
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_real_importer_integration_test.py:211
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_real_importer_integration_test.py:219
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_20260825_165947\app__services__data_import__normalized_schedule_importer.py:55
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_20260825_165947\app__services__data_import__schedule_normalizer.py:207
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_AI_REVIEW_ROUTING_20260825_173608\schedule_normalizer.py:368
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_INTEGRATION_20260825_173222\schedule_normalizer.py:207
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\schedule_normalizer.py:368
+
+
+Pattern 'needs_user_input' FOUND in:
+  D:\PIP\Projects\pip-ai-platform\app\services\ai\smart_import_agent.py:628
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\normalized_schedule_importer.py:53
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\schedule_normalizer.py:358
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\smart_import_contract.py:38
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\smart_import_contract.py:42
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\smart_import_contract.py:56
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\MVP_TIER1_20260824_140436\_sprint08d_adapter_contract_test.py:287
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_20260825_165947\app__services__data_import__normalized_schedule_importer.py:54
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_20260825_165947\app__services__data_import__schedule_normalizer.py:205
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_AI_REVIEW_ROUTING_20260825_173608\schedule_normalizer.py:362
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_AI_REVIEW_ROUTING_20260825_173608\schedule_normalizer.py:365
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ANCHOR_PATCH_20260825_180045\smart_import_agent.py:624
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_COMPACT_PROMPT_20260825_175426\smart_import_agent.py:668
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_20260825_171226\smart_import_agent.py:498
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_ACCEPT_FIX_20260825_175959\smart_import_agent.py:624
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_INTEGRATION_20260825_173222\schedule_normalizer.py:205
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_20260825_174235\smart_import_agent.py:655
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_FIX_20260825_174353\smart_import_agent.py:655
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_NONE_CANDIDATE_VALIDATION_20260825_175737\smart_import_agent.py:615
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_REFINEMENT_20260825_170656\smart_import_agent.py:13
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_REFINEMENT_20260825_170656\smart_import_agent.py:341
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_RESOLVER_V2_20260825_171625\smart_import_agent.py:605
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\schedule_normalizer.py:362
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\schedule_normalizer.py:365
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\smart_import_agent.py:655
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_40S_20260825_172746\smart_import_agent.py:655
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172356\smart_import_agent.py:655
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172450\smart_import_agent.py:655
+
+
+Pattern '_extract_json_object' FOUND in:
+  D:\PIP\Projects\pip-ai-platform\app\services\ai\smart_import_agent.py:28
+  D:\PIP\Projects\pip-ai-platform\app\services\ai\smart_import_agent.py:301
+  D:\PIP\Projects\pip-ai-platform\app\services\ai\smart_import_agent.py:306
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ANCHOR_PATCH_20260825_180045\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ANCHOR_PATCH_20260825_180045\smart_import_agent.py:303
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ANCHOR_PATCH_20260825_180045\smart_import_agent.py:308
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_COMPACT_PROMPT_20260825_175426\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_COMPACT_PROMPT_20260825_175426\smart_import_agent.py:356
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_COMPACT_PROMPT_20260825_175426\smart_import_agent.py:361
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_ACCEPT_FIX_20260825_175959\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_ACCEPT_FIX_20260825_175959\smart_import_agent.py:303
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_ACCEPT_FIX_20260825_175959\smart_import_agent.py:308
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_20260825_174235\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_20260825_174235\smart_import_agent.py:356
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_FIX_20260825_174353\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_FIX_20260825_174353\smart_import_agent.py:356
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_NONE_CANDIDATE_VALIDATION_20260825_175737\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_NONE_CANDIDATE_VALIDATION_20260825_175737\smart_import_agent.py:303
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_NONE_CANDIDATE_VALIDATION_20260825_175737\smart_import_agent.py:308
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_RESOLVER_V2_20260825_171625\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_RESOLVER_V2_20260825_171625\smart_import_agent.py:356
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\smart_import_agent.py:356
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_40S_20260825_172746\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_40S_20260825_172746\smart_import_agent.py:356
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172356\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172356\smart_import_agent.py:356
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172450\smart_import_agent.py:27
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172450\smart_import_agent.py:356
+
+Pattern 'SmartImportAgent' -> NOT FOUND anywhere in *.py files
+Pattern 'ScheduleNormalizer' -> NOT FOUND anywhere in *.py files
+Pattern 'NormalizedScheduleImporter' -> NOT FOUND anywhere in *.py files
+
+Pattern 'ai_semantic_validation' FOUND in:
+  D:\PIP\Projects\pip-ai-platform\app\services\ai\smart_import_agent.py:595
+  D:\PIP\Projects\pip-ai-platform\app\services\ai\smart_import_agent.py:636
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\schedule_normalizer.py:135
+  D:\PIP\Projects\pip-ai-platform\app\services\data_import\schedule_normalizer.py:220
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_AI_REVIEW_ROUTING_20260825_173608\schedule_normalizer.py:134
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_AI_REVIEW_ROUTING_20260825_173608\schedule_normalizer.py:219
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ANCHOR_PATCH_20260825_180045\smart_import_agent.py:591
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ANCHOR_PATCH_20260825_180045\smart_import_agent.py:632
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_COMPACT_PROMPT_20260825_175426\smart_import_agent.py:635
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_COMPACT_PROMPT_20260825_175426\smart_import_agent.py:676
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_20260825_171226\smart_import_agent.py:465
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_20260825_171226\smart_import_agent.py:506
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_ACCEPT_FIX_20260825_175959\smart_import_agent.py:591
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_FINAL_ACCEPT_FIX_20260825_175959\smart_import_agent.py:632
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_20260825_174235\smart_import_agent.py:622
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_20260825_174235\smart_import_agent.py:663
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_FIX_20260825_174353\smart_import_agent.py:622
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_JSON_PARSER_FIX_20260825_174353\smart_import_agent.py:663
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_NONE_CANDIDATE_VALIDATION_20260825_175737\smart_import_agent.py:582
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_NONE_CANDIDATE_VALIDATION_20260825_175737\smart_import_agent.py:623
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_RESOLVER_V2_20260825_171625\smart_import_agent.py:572
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_RESOLVER_V2_20260825_171625\smart_import_agent.py:613
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\schedule_normalizer.py:134
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\schedule_normalizer.py:219
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\smart_import_agent.py:622
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_ROUTING_V2_20260825_173733\smart_import_agent.py:663
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_40S_20260825_172746\smart_import_agent.py:622
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_40S_20260825_172746\smart_import_agent.py:663
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172356\smart_import_agent.py:622
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172356\smart_import_agent.py:663
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172450\smart_import_agent.py:622
+  D:\PIP\Projects\pip-ai-platform\_cleanup_archive_20260826_111806\_archive\SMART_IMPORT_AGENT_TIMEOUT_FINAL_20260825_172450\smart_import_agent.py:663
+
+
+================================================================
+ 5. CURRENT ACTUAL SCHEDULE IMPORT PIPELINE
+================================================================
+app/routers/schedule_import.py exists. Content:
+import os
+import tempfile
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from sqlalchemy.orm import Session
+
+from app.database.session import get_db
+from app.services.data_import.schedule_importer import import_schedule_excel
+
+router = APIRouter(
+    prefix="/import",
+    tags=["Import"]
+)
+
+
+@router.post("/schedule/{project_id}")
+def import_schedule(
+    project_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+
+    filename = file.filename or ""
+
+    if not filename.lower().endswith((".xlsx", ".xls")):
+        raise HTTPException(
+            status_code=400,
+            detail="Only Excel files are allowed"
+        )
+
+    suffix = os.path.splitext(filename)[1].lower()
+
+    temp_path = None
+
+    try:
+
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=suffix
+        ) as temp_file:
+
+            temp_path = temp_file.name
+
+            while True:
+
+                chunk = file.file.read(1024 * 1024)
+
+                if not chunk:
+                    break
+
+                temp_file.write(chunk)
+
+        result = import_schedule_excel(
+            db=db,
+            file_path=temp_path,
+            project_id=project_id
+        )
+
+        return result
+
+    finally:
+
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
+
+
+app/services/data_import/schedule_importer.py exists (first 40 lines):
+from __future__ import annotations
+
+from sqlalchemy.orm import Session
+
+from app.models.schedule import ScheduleActivity
+from app.services.data_import.schedule_normalizer import (
+    normalize_schedule_excel,
+)
+
+
+def import_schedule_excel(
+    db: Session,
+    file_path: str,
+    project_id: int,
+):
+    """
+    Smart Excel import gate.
+
+    Pipeline:
+        Excel
+          -> Smart Normalizer
+          -> READY
+          -> Idempotent Upsert
+          -> PostgreSQL
+
+    Normalization failures never modify the database.
+    """
+
+    result = normalize_schedule_excel(file_path)
+
+    if result.status != "ready":
+        return {
+            "project_id": project_id,
+            "status": result.status,
+            "imported": False,
+            "normalization": {
+                "status": result.status,
+                "mappings": [
+                    {
+                        "source_column": m.source_column,
+
+
+================================================================
+ 6. ARCHITECTURE / OPERATIONS ARTIFACTS REFERENCED IN PIP_MASTER SECTION 37
+================================================================
+MISSING: PIP_FINAL_APPROVED_OPERATIONS_ARCHITECTURE_2026-08-25.md (not found anywhere under D:\PIP\Projects\pip-ai-platform)
+MISSING: PIP_Market_and_Product_Benchmark_2026.pdf (not found anywhere under D:\PIP\Projects\pip-ai-platform)
+MISSING: pip-ai-platform.zip (not found anywhere under D:\PIP\Projects\pip-ai-platform)
+
+--- .artifacts/10_Operations contents (if present) ---
+
+Name                         
+----                         
+01_OPERATIONS_ARCHITECTURE.md
+02_SYSTEM_OPERATIONS.md      
+04_SUPPORT_PROCESS.md        
+05_OPERATIONS_MONITORING.md  
+
+
+
+
+================================================================
+ 7. SPRINT DOCS PRESENT (docs/sprints)
+================================================================
+
+Name                              
+----                              
+SPRINT-01-PRODUCT-VISION.md       
+SPRINT-02-ARCHITECTURE.md         
+SPRINT-03-DATABASE-FOUNDATION.md  
+SPRINT-04-PROJECT-WBS-MODULE.md   
+SPRINT-05-LOCAL-AI-INTEGRATION.md 
+SPRINT-06-CONTRACT-INTELLIGENCE.md
+SPRINT-07-RISK-MODULE.md          
+
+
+
+
+================================================================
+ 8. .ai/ PROJECT MEMORY & CONSTITUTION
+================================================================
+PROJECT_MEMORY.md exists, line count: 0
+File is EMPTY.
+
+PIP_CONSTITUTION.md exists: True
+
+================================================================
+ 9. DEPENDENCIES SNAPSHOT (requirements.txt)
+================================================================
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+python-dotenv
+requests
+
+pandas
+
+python-multipart
+
+pypdf==6.16.1
+openpyxl==3.1.5
+
+# Test / vector store (used by app/tests/test_qdrant.py and migrations)
+alembic==1.19.1
+qdrant-client==1.19.0
+
+
+================================================================
+ 10. ROUTERS ACTUALLY REGISTERED (app/main.py)
+================================================================
+
+app.include_router(project_router)
+app.include_router(documents_router)
+app.include_router(contract_router)
+app.include_router(wbs_router)
+app.include_router(ai_router)
+app.include_router(risks_router)
+app.include_router(schedule_router)
+app.include_router(schedule_import_router)
+app.include_router(dashboard_router)
+app.include_router(cost_router)
+app.include_router(risk_register_router)
+app.include_router(demo_router)
+
+
+
+
+================================================================
+ 11. LIVE RUNTIME CHECK (optional — only if backend is currently running)
+================================================================
+Backend IS reachable at http://127.0.0.1:8000/
+{
+    "system":  "PIP AI Platform",
+    "status":  "running"
+}
+
+--- OpenAPI paths (route list actually served) ---
+/
+/ai/chat
+/ai/project-alerts/{project_id}
+/ai/project-control-center/{project_id}
+/ai/project-kpi/{project_id}
+/ai/project-status-report/{project_id}
+/ai/project-summary/{project_id}
+/ai/schedule-analysis/{project_id}
+/ai/schedule-recovery/{project_id}
+/contracts/
+/contracts/project/{project_id}
+/cost/project/{project_id}
+/dashboard/ai-summary/{project_id}
+/dashboard/critical-activities/{project_id}
+/dashboard/executive/{project_id}
+/dashboard/project/{project_id}
+/demo/project/{project_id}
+/documents/upload
+/import/schedule/{project_id}
+/projects/
+/projects/{project_id}
+/risk/project/{project_id}
+/risks/
+/risks/project/{project_id}
+/risks/project/{project_id}/heatmap
+/schedule/
+/schedule/{activity_id}
+/schedule/project/{project_id}
+/wbs/
+/wbs/project/{project_id}
+
+
+================================================================
+ END OF REPORT
+================================================================
+Copy everything above (from '0. ROOT & TIMESTAMP' down to here) and send it to Claude.
+

@@ -1,4 +1,6 @@
-﻿import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
+import { ProjectProvider } from "./context/ProjectContext";
 
 import Layout from "./components/layout/Layout";
 
@@ -8,11 +10,13 @@ import WBS from "./pages/WBS";
 import Login from "./pages/Login";
 import Documents from "./pages/Documents";
 import Schedule from "./pages/Schedule";
+import Cost from "./pages/Cost";
 import ModulePlaceholder from "./pages/ModulePlaceholder";
 
 export default function App() {
   return (
-    <Routes>
+    <ProjectProvider>
+      <Routes>
 
       <Route
         path="/login"
@@ -70,11 +74,7 @@ export default function App() {
 
         <Route
           path="/cost"
-          element={
-            <ModulePlaceholder
-              title="Cost Intelligence"
-            />
-          }
+          element={<Cost />}
         />
 
         <Route
@@ -94,6 +94,7 @@ export default function App() {
       </Route>
 
     </Routes>
+    </ProjectProvider>
   );
 }
 
