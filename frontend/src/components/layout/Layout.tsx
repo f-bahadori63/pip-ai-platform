@@ -1,4 +1,4 @@
-﻿import { Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
@@ -8,7 +8,7 @@ const drawerWidth = 260;
 
 export default function Layout() {
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", width: "100%", minWidth: 0, minHeight: "100vh" }}>
       <Sidebar />
       <Topbar />
 
@@ -16,11 +16,14 @@ export default function Layout() {
         component="main"
         sx={{
           flexGrow: 1,
-          ml: `${drawerWidth}px`,
+          width: `calc(100% - ${drawerWidth}px)`,
+          minWidth: 0,
           mt: 8,
           bgcolor: "background.default",
-          minHeight: "100vh",
-          p: 4,
+          minHeight: "calc(100vh - 64px)",
+          p: { xs: 2, md: 3 },
+          boxSizing: "border-box",
+          overflowX: "hidden",
         }}
       >
         <Outlet />

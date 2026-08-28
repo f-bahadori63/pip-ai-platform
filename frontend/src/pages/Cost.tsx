@@ -30,6 +30,10 @@ function EVMField({
     <Box
       sx={{
         p: 1.5,
+        minWidth: 0,
+        height: "100%",
+        boxSizing: "border-box",
+        overflow: "hidden",
         borderRadius: 2,
         bgcolor: "rgba(255,255,255,0.06)",
         border: "1px solid rgba(255,255,255,0.08)",
@@ -39,7 +43,19 @@ function EVMField({
         {label}
       </Typography>
 
-      <Typography variant="h6" sx={{ fontWeight: 700, color: "white", mt: 0.25 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          mt: 0.25,
+          minWidth: 0,
+          fontWeight: 700,
+          fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
+          lineHeight: 1.2,
+          color: "white",
+          overflowWrap: "anywhere",
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
         {value}
       </Typography>
     </Box>
@@ -150,62 +166,81 @@ function CostCard({
   return (
     <Paper
       sx={{
+        position: "relative",
         height: "100%",
+        minHeight: 155,
+        minWidth: 0,
         p: 2.5,
+        boxSizing: "border-box",
+        overflow: "hidden",
         borderRadius: 3,
         background:
           "linear-gradient(145deg, rgba(30,41,59,0.98), rgba(15,23,42,0.98))",
         border: "1px solid rgba(255,255,255,0.08)",
       }}
     >
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        <Box>
-          <Typography
-            variant="body2"
-            sx={{ color: "rgba(255,255,255,0.65)" }}
-          >
-            {title}
-          </Typography>
-
-          <Typography
-            variant="h4"
-            sx={{ mt: 1, fontWeight: 800, color: "white" }}
-          >
-            {value}
-          </Typography>
-
-          {subtitle && (
-            <Typography
-              variant="caption"
-              sx={{ display: "block", mt: 0.75, color: "rgba(255,255,255,0.5)" }}
-            >
-              {subtitle}
-            </Typography>
-          )}
-        </Box>
-
-        <Box
+      <Box sx={{ minWidth: 0, width: "100%" }}>
+        <Typography
+          variant="body2"
           sx={{
-            width: 48,
-            height: 48,
-            borderRadius: 2,
-            bgcolor: `${color}.main`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
+            minHeight: "2.5em",
+            pr: 6.5,
+            lineHeight: 1.25,
+            color: "rgba(255,255,255,0.65)",
           }}
         >
-          {icon}
-        </Box>
-      </Stack>
+          {title}
+        </Typography>
+
+        <Typography
+          variant="h4"
+          sx={{
+            mt: 1,
+            maxWidth: "100%",
+            fontWeight: 800,
+            fontSize: "clamp(1.55rem, 2.2vw, 2.15rem)",
+            lineHeight: 1.12,
+            color: "white",
+            overflowWrap: "anywhere",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {value}
+        </Typography>
+
+        {subtitle && (
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              mt: 0.75,
+              lineHeight: 1.3,
+              color: "rgba(255,255,255,0.5)",
+            }}
+          >
+            {subtitle}
+          </Typography>
+        )}
+      </Box>
+
+      <Box
+        sx={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          width: 42,
+          height: 42,
+          flexShrink: 0,
+          borderRadius: 2,
+          bgcolor: `${color}.main`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+        }}
+      >
+        {icon}
+      </Box>
     </Paper>
   );
 }
@@ -330,7 +365,16 @@ export default function Cost() {
   const noData = Boolean(cost?.message);
 
   return (
-    <Box sx={{ p: 3, pb: 5 }}>
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: "none",
+        minWidth: 0,
+        p: { xs: 1, md: 2 },
+        pb: 5,
+        boxSizing: "border-box",
+      }}
+    >
       <Stack
         direction={{ xs: "column", md: "row" }}
         spacing={2}
@@ -410,7 +454,7 @@ export default function Cost() {
             </Alert>
           ) : cost ? (
             <Grid container spacing={2.5}>
-              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4, xl: 3 }}>
                 <CostCard
                   title="Planned Cost (PV)"
                   value={formatNumber(cost.planned_cost)}
@@ -420,7 +464,7 @@ export default function Cost() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4, xl: 3 }}>
                 <CostCard
                   title="Actual Cost (AC)"
                   value={formatNumber(cost.actual_cost)}
@@ -430,7 +474,7 @@ export default function Cost() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4, xl: 3 }}>
                 <CostCard
                   title="Earned Value (EV)"
                   value={formatNumber(cost.earned_value)}
@@ -440,7 +484,7 @@ export default function Cost() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4, xl: 3 }}>
                 <CostCard
                   title="Cost Variance (CV)"
                   value={formatNumber(cost.cost_variance)}
@@ -460,7 +504,7 @@ export default function Cost() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4, xl: 3 }}>
                 <CostCard
                   title="Remaining Cost"
                   value={formatNumber(cost.remaining_cost)}
@@ -470,7 +514,7 @@ export default function Cost() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4, xl: 3 }}>
                 <CostCard
                   title="Cost Health"
                   value={cost.cost_health}
