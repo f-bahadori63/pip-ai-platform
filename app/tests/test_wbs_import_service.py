@@ -14,7 +14,10 @@ from app.models import Project, Risk, ScheduleActivity, WBSItem  # noqa: F401
 from app.services.data_import.normalization_models import NormalizationResult
 from app.services.data_import.schedule_importer import import_schedule_excel
 from app.services.data_import.schedule_normalizer import normalize_schedule_excel
-from app.services.wbs_import_service import replace_project_wbs_from_schedule
+from app.services.wbs_import_service import (
+    clear_project_wbs,
+    replace_project_wbs_from_schedule,
+)
 
 
 @pytest.fixture()
@@ -130,6 +133,48 @@ def test_replace_removes_old_wbs_and_builds_uploaded_hierarchy(db):
     assert first.wbs_id == by_code["2.1"].id
     assert second.wbs_id == by_code["2.2"].id
     assert risk.wbs_item_id is None
+
+
+def test_clear_removes_legacy_cross_project_foreign_key_references(db):
+    owner_project = _project(db, "P-OWNER")
+    other_project = _project(db, "P-OTHER")
+
+    old_item = WBSItem(
+        project_id=owner_project.id,
+        code="OLD",
+        name="Legacy shared WBS",
+        level=1,
+    )
+    db.add(old_item)
+    db.flush()
+
+    # This invalid cross-project association was possible in the legacy
+    # importer because an uploaded WBS value was stored as a raw database ID.
+    other_activity = ScheduleActivity(
+        project_id=other_project.id,
+        wbs_id=old_item.id,
+        activity_code="OTHER-001",
+        activity_name="Other project activity",
+    )
+    other_risk = Risk(
+        project_id=other_project.id,
+        wbs_item_id=old_item.id,
+        risk_code="R-CROSS-PROJECT",
+        title="Legacy cross-project link",
+        probability=1,
+        impact=1,
+        score=1,
+    )
+    db.add_all([other_activity, other_risk])
+    db.commit()
+
+    deleted = clear_project_wbs(db, owner_project.id)
+    db.commit()
+
+    assert deleted == 1
+    assert db.query(WBSItem).filter_by(project_id=owner_project.id).count() == 0
+    assert other_activity.wbs_id is None
+    assert other_risk.wbs_item_id is None
 
 
 def test_replace_derives_wbs_when_file_has_no_wbs_column(db):

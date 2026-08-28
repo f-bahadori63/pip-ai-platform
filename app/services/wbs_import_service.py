@@ -107,24 +107,53 @@ def _natural_code_key(code: str) -> tuple:
 
 
 def clear_project_wbs(db: Session, project_id: int) -> int:
-    """Delete one project's WBS safely without committing the transaction."""
+    """Delete one project's WBS safely without committing the transaction.
+
+    Legacy imports treated the workbook's ``wbs_id`` as a database primary
+    key. That allowed activities or risks belonging to another project to
+    reference this project's WBS rows. References are therefore cleared by
+    target WBS ID, not only by the referencing row's project ID.
+    """
+
+    wbs_ids = [
+        item_id
+        for (item_id,) in (
+            db.query(WBSItem.id)
+            .filter(WBSItem.project_id == project_id)
+            .all()
+        )
+    ]
+
+    if not wbs_ids:
+        return 0
 
     db.query(ScheduleActivity).filter(
-        ScheduleActivity.project_id == project_id
+        ScheduleActivity.wbs_id.in_(wbs_ids)
     ).update(
         {ScheduleActivity.wbs_id: None},
         synchronize_session="fetch",
     )
 
     db.query(Risk).filter(
-        Risk.project_id == project_id
+        Risk.wbs_item_id.in_(wbs_ids)
     ).update(
         {Risk.wbs_item_id: None},
         synchronize_session="fetch",
     )
 
+    # Break any self-referencing parent links first. This also supports legacy
+    # databases where the self foreign key was created with RESTRICT behavior.
+    db.query(WBSItem).filter(
+        WBSItem.id.in_(wbs_ids)
+    ).update(
+        {WBSItem.parent_id: None},
+        synchronize_session="fetch",
+    )
+
+    db.flush()
+
     deleted = db.query(WBSItem).filter(
-        WBSItem.project_id == project_id
+        WBSItem.id.in_(wbs_ids)
     ).delete(synchronize_session="fetch")
 
     db.flush()
