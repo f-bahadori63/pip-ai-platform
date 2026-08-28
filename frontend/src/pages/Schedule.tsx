@@ -119,6 +119,8 @@ export default function Schedule() {
   const {
     selectedProjectId: projectId,
     selectedProject,
+    selectProject,
+    reloadProjects,
   } = useProject();
 
   const [activities, setActivities] = useState<ScheduleActivity[]>([]);
@@ -194,11 +196,6 @@ export default function Schedule() {
       return;
     }
 
-    if (projectId === "") {
-      setError("Please select a project before uploading an Excel schedule.");
-      return;
-    }
-
     const lowerName = file.name.toLowerCase();
 
     if (!lowerName.endsWith(".xlsx") && !lowerName.endsWith(".xls")) {
@@ -211,15 +208,34 @@ export default function Schedule() {
       setUploadMessage("");
       setError("");
 
-      const response = await uploadScheduleExcel(
-        projectId,
-        file
-      );
+      const response = await uploadScheduleExcel(file);
 
       const imported =
         response?.data?.import ??
         response?.data ??
         {};
+
+      if (imported.imported !== true) {
+        const status = String(imported.status ?? "not imported");
+        const missing = imported.normalization?.missing_fields
+          ?.map((field: { field?: string }) => field.field)
+          .filter(Boolean)
+          .join(", ");
+
+        setError(
+          `Excel was not imported (${status}).${missing ? ` Missing fields: ${missing}.` : ""}`
+        );
+        return;
+      }
+
+      const resolvedProjectId = Number(response.data.project_id);
+      const resolvedProjectName = String(
+        response.data.project?.name ?? file.name
+      );
+
+      if (!Number.isFinite(resolvedProjectId)) {
+        throw new Error("Upload response did not contain a valid project ID.");
+      }
 
       const inserted = Number(
         imported.created_count ?? imported.inserted ?? 0
@@ -245,14 +261,16 @@ export default function Schedule() {
         : "";
 
       setUploadMessage(
-        `Excel uploaded successfully. ${total} activities processed.${wbsMessage}`
+        `Excel uploaded successfully for project "${resolvedProjectName}". ${total} activities processed.${wbsMessage}`
       );
 
-      await loadSchedule(projectId);
+      await reloadProjects();
+      selectProject(resolvedProjectId);
+      await loadSchedule(resolvedProjectId);
 
       // Analyze the freshly imported schedule: derive WBS, compute EVM
       // and generate the management intelligence report.
-      await runAnalysis(projectId);
+      await runAnalysis(resolvedProjectId);
 
     } catch (err: any) {
       console.error(
@@ -520,17 +538,14 @@ export default function Schedule() {
             color="text.secondary"
             sx={{ mt: 0.5 }}
           >
-            Upload an Excel schedule (.xlsx or .xls) for the selected project.
+            Upload an Excel schedule. The project is found or created automatically from the filename.
           </Typography>
         </Box>
 
         <Button
           component="label"
           variant="contained"
-          disabled={
-            projectId === "" ||
-            uploadingExcel
-          }
+          disabled={uploadingExcel}
         >
           {uploadingExcel
             ? "Uploading..."

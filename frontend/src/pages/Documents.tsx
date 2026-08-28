@@ -15,9 +15,10 @@ interface UploadResult {
 
 export default function Documents() {
   const {
-    selectedProjectId: projectId,
     selectedProject,
     loading: loadingProjects,
+    selectProject,
+    reloadProjects,
   } = useProject();
 
   const [file, setFile] = useState<File | null>(null);
@@ -26,11 +27,6 @@ export default function Documents() {
   const [result, setResult] = useState<UploadResult | null>(null);
 
   const handleProcess = async () => {
-    if (projectId === "") {
-      setError("Please select a project.");
-      return;
-    }
-
     if (!file) {
       setError("Please select an Excel or PDF file.");
       return;
@@ -45,7 +41,7 @@ export default function Documents() {
       formData.append("file", file);
 
       const response = await api.post(
-        `/documents/upload?project_id=${projectId}`,
+        "/documents/upload",
         formData,
         {
           headers: {
@@ -55,7 +51,41 @@ export default function Documents() {
         }
       );
 
-      setResult(response.data);
+      const uploadResult = response.data as UploadResult & {
+        project_id?: number;
+        project?: { name?: string };
+        import?: {
+          imported?: boolean;
+          status?: string;
+          normalization?: {
+            missing_fields?: Array<{ field?: string }>;
+          };
+        };
+      };
+
+      if (
+        uploadResult.input_type === "excel" &&
+        uploadResult.import?.imported !== true
+      ) {
+        const missing = uploadResult.import?.normalization?.missing_fields
+          ?.map((field) => field.field)
+          .filter(Boolean)
+          .join(", ");
+
+        setError(
+          `Excel was not imported (${uploadResult.import?.status ?? "normalization failed"}).${missing ? ` Missing fields: ${missing}.` : ""}`
+        );
+        return;
+      }
+
+      const resolvedProjectId = Number(uploadResult.project_id);
+
+      if (Number.isFinite(resolvedProjectId)) {
+        await reloadProjects();
+        selectProject(resolvedProjectId);
+      }
+
+      setResult(uploadResult);
     } catch (err: any) {
       console.error("Document processing failed:", err);
 
@@ -78,7 +108,7 @@ export default function Documents() {
       </Typography>
 
       <Typography color="text.secondary" sx={{ mb: 3 }}>
-        Upload project documents and generate Management Intelligence.
+        Upload project documents. The project is found or created automatically from the filename.
       </Typography>
 
       <Box
@@ -112,12 +142,12 @@ export default function Documents() {
                     variant="caption"
                     sx={{ ml: 1, color: "text.secondary" }}
                   >
-                    (change via the project selector in the top bar)
+                    (current view; the upload target is resolved from the filename)
                   </Typography>
                 </>
               ) : (
-                <Alert severity="warning">
-                  No projects found. Select a project from the top bar.
+                <Alert severity="info">
+                  No project exists yet. Uploading a file will create one from its filename.
                 </Alert>
               )}
             </Typography>
@@ -127,7 +157,7 @@ export default function Documents() {
         <Button
           variant="outlined"
           component="label"
-          disabled={projectId === "" || processing}
+          disabled={processing}
         >
           {file ? "Change File" : "Select Excel / PDF"}
 
@@ -160,7 +190,6 @@ export default function Documents() {
             variant="contained"
             size="large"
             disabled={
-              projectId === "" ||
               file === null ||
               processing ||
               loadingProjects
