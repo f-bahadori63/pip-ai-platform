@@ -167,6 +167,50 @@ def test_replace_derives_wbs_when_file_has_no_wbs_column(db):
     assert {activity.wbs_id for activity in activities} == {item.id}
 
 
+def test_zero_suffix_root_is_preserved_and_used_as_parent(db):
+    project = _project(db)
+    activities = [
+        ScheduleActivity(
+            project_id=project.id,
+            activity_code="A010",
+            activity_name="Project Management",
+        ),
+        ScheduleActivity(
+            project_id=project.id,
+            activity_code="A011",
+            activity_name="Kick-off Meeting",
+        ),
+    ]
+    db.add_all(activities)
+    db.flush()
+
+    replace_project_wbs_from_schedule(
+        db,
+        project.id,
+        [
+            {
+                "activity_code": "A010",
+                "activity_name": "Project Management",
+                "wbs_code": "2.0",
+            },
+            {
+                "activity_code": "A011",
+                "activity_name": "Kick-off Meeting",
+                "wbs_code": "2.1",
+            },
+        ],
+    )
+    db.commit()
+
+    items = db.query(WBSItem).filter_by(project_id=project.id).all()
+    by_code = {item.code: item for item in items}
+
+    assert set(by_code) == {"2.0", "2.1"}
+    assert by_code["2.0"].level == 1
+    assert by_code["2.1"].level == 2
+    assert by_code["2.1"].parent_id == by_code["2.0"].id
+
+
 def test_normalizer_preserves_wbs_code_and_name(tmp_path):
     path = tmp_path / "schedule.xlsx"
     pd.DataFrame(

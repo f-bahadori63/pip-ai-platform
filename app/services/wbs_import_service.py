@@ -28,11 +28,9 @@ def _clean_text(value: Any) -> str | None:
     if not text or text.lower() in {"nan", "none", "null"}:
         return None
 
-    # Excel commonly exposes integral numeric cells as ``10.0``.  WBS codes
-    # should remain identifiers, not floating-point values.
-    if re.fullmatch(r"[+-]?\d+\.0", text):
-        text = text[:-2]
-
+    # Keep identifier formatting exactly as supplied by Excel. In many WBS
+    # conventions ``2.0`` is the level-one package and ``2.1`` is its child;
+    # converting ``2.0`` to ``2`` would lose source information.
     return text or None
 
 
@@ -60,15 +58,42 @@ def derive_wbs_code(activity_code: str | None) -> str | None:
     return None
 
 
-def _parent_code(code: str) -> str | None:
-    if "." not in code:
+def _parent_code(
+    code: str,
+    available_codes: set[str] | None = None,
+) -> str | None:
+    """Resolve a dotted WBS parent, including the common ``x.0`` style.
+
+    Examples from uploaded schedules:
+        2.0 -> None
+        2.1 -> 2.0  (when 2.0 exists)
+        1.2.3 -> 1.2
+    """
+
+    if "." not in code or re.fullmatch(r"[^.]+\.0", code):
         return None
 
-    parent = code.rsplit(".", 1)[0].strip()
-    return parent or None
+    base = code.rsplit(".", 1)[0].strip()
+
+    if not base:
+        return None
+
+    if available_codes:
+        if base in available_codes:
+            return base
+
+        zero_parent = f"{base}.0"
+
+        if zero_parent in available_codes:
+            return zero_parent
+
+    return base
 
 
 def _level(code: str) -> int:
+    if re.fullmatch(r"[^.]+\.0", code):
+        return 1
+
     return code.count(".") + 1
 
 
@@ -157,9 +182,13 @@ def replace_project_wbs_from_schedule(
             activity_to_wbs[activity_code] = wbs_code
 
     # A dotted child requires its parent to exist. Add missing ancestors, but
-    # never invent a descriptive title for them.
+    # never invent a descriptive title for them. Codes ending in .0 are
+    # treated as level-one packages; for example 2.1 attaches to 2.0 when the
+    # uploaded file contains both values.
+    source_codes = set(packages)
+
     for code in list(packages):
-        parent = _parent_code(code)
+        parent = _parent_code(code, source_codes)
 
         while parent:
             packages.setdefault(
@@ -169,7 +198,8 @@ def replace_project_wbs_from_schedule(
                     "activity_names": [],
                 },
             )
-            parent = _parent_code(parent)
+            source_codes.add(parent)
+            parent = _parent_code(parent, source_codes)
 
     deleted_count = clear_project_wbs(db, project_id)
 
@@ -195,7 +225,9 @@ def replace_project_wbs_from_schedule(
         if not name:
             name = code
 
-        parent = code_to_item.get(_parent_code(code) or "")
+        parent = code_to_item.get(
+            _parent_code(code, set(packages)) or ""
+        )
 
         item = WBSItem(
             project_id=project_id,
