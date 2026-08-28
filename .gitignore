@@ -85,3 +85,8 @@ _mvp_*.py
 frontend/frontend-build-errors.txt
 pip-ai-platform-*.patch
 pip-ai-platform-*.zip
+
+# Google Cloud MVP deployment automation and sensitive local exports
+!deploy/**/*.ps1
+*.sql
+*.dump

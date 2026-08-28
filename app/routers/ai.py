@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.models.project import Project
 from app.services.ai.executive_report import generate_executive_report
-from app.services.ai.ollama_client import MODEL_NAME, generate
+from app.services.ai.ollama_client import AI_ENABLED, MODEL_NAME, generate
 from app.services.ai.project_assistant import build_project_summary
 from app.services.ai.project_control_center import build_project_control_center
 from app.services.ai.schedule_analyzer import analyze_project_schedule
@@ -25,6 +25,17 @@ def local_chat(
     project_id: int | None = Query(None),
     db: Session = Depends(get_db),
 ):
+
+    if not AI_ENABLED:
+        return {
+            "model": "disabled",
+            "response": (
+                "AI is disabled in the current MVP deployment. "
+                "Project dashboards, WBS, schedule and EVM remain available."
+            ),
+            "done": True,
+            "project_id": project_id,
+        }
 
     if project_id is None:
 

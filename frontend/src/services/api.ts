@@ -1,7 +1,13 @@
 import axios from "axios";
 
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000",
+  // Production uses the same Cloud Run origin as the compiled frontend.
+  // Local Vite development continues to call the local FastAPI server.
+  baseURL:
+    configuredApiBaseUrl ??
+    (import.meta.env.PROD ? "/" : "http://127.0.0.1:8000"),
   timeout: 120000,
 });
 

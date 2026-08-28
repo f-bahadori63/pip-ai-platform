@@ -1,0 +1,14 @@
+# Runtime-only dependencies for the Google Cloud MVP.
+# qdrant-client is intentionally excluded because Qdrant is not deployed.
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+python-dotenv
+requests
+pandas
+python-multipart
+pypdf==6.16.1
+openpyxl==3.1.5
+alembic==1.19.1

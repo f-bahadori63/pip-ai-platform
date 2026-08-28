@@ -1,8 +1,9 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from app.routers.ai import router as ai_router
 from app.routers.analysis import router as analysis_router
@@ -66,9 +67,35 @@ async def add_utf8_header(request, call_next):
         response.headers["content-type"] = "application/json; charset=utf-8"
 
     return response
-@app.get("/")
-def root():
+@app.get("/api/health", tags=["Health"])
+def health():
     return {
         "system": "PIP AI Platform",
-        "status": "running"
+        "status": "running",
+        "mode": "mvp",
     }
+
+
+# In the Cloud Run image, Vite's compiled output is copied here. API routes
+# above keep priority; all other paths fall back to index.html for BrowserRouter.
+frontend_dist = Path(__file__).resolve().parents[1] / "frontend" / "dist"
+
+if frontend_dist.is_dir():
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_frontend(full_path: str):
+        requested = (frontend_dist / full_path).resolve()
+
+        if (
+            requested.is_file()
+            and frontend_dist.resolve() in requested.parents
+        ):
+            return FileResponse(requested)
+
+        return FileResponse(frontend_dist / "index.html")
+
+else:
+
+    @app.get("/", include_in_schema=False)
+    def local_backend_root():
+        return health()

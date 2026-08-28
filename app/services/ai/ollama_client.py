@@ -1,6 +1,10 @@
-﻿import os
+import os
 
 import requests
+
+from app.core.config import settings
+
+AI_ENABLED = settings.AI_ENABLED
 
 OLLAMA_BASE_URL = os.getenv(
     "OLLAMA_BASE_URL",
@@ -24,6 +28,11 @@ def generate(
     num_predict: int = 100,
     temperature: float = 0.2,
 ) -> str:
+
+    if not AI_ENABLED:
+        raise RuntimeError(
+            "AI generation is disabled for this MVP deployment"
+        )
 
     response = requests.post(
         OLLAMA_URL,

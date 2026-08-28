@@ -1,9 +1,9 @@
-﻿from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session
 
 from app.models.project import Project
 from app.models.risk import Risk
 from app.models.wbs import WBSItem
-from app.services.ai.ollama_client import generate
+from app.services.ai.ollama_client import AI_ENABLED, generate
 
 
 def build_project_summary(db: Session, project_id: int) -> dict:
@@ -11,6 +11,17 @@ def build_project_summary(db: Session, project_id: int) -> dict:
 
     if not project:
         return {"error": "Project not found"}
+
+    if not AI_ENABLED:
+        return {
+            "project_id": project.id,
+            "project_code": project.project_code,
+            "project_name": project.name,
+            "summary": (
+                "AI is disabled in the current MVP deployment. "
+                "Use the deterministic Dashboard, WBS, Schedule and Cost views."
+            ),
+        }
 
     # WBS
     wbs_items = (
