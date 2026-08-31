@@ -1,4 +1,4 @@
-﻿import {
+import {
   Drawer,
   List,
   ListItemButton,
@@ -7,8 +7,9 @@
   Toolbar,
   Typography,
   Box,
+  useMediaQuery,
 } from "@mui/material";
-
+import { useTheme } from "@mui/material/styles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import FolderIcon from "@mui/icons-material/Folder";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -19,7 +20,6 @@ import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturi
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import DescriptionIcon from "@mui/icons-material/Description";
-
 import { NavLink } from "react-router-dom";
 
 const drawerWidth = 260;
@@ -41,24 +41,18 @@ const menuItems = [
   { text: "Documents", path: "/documents", icon: <DescriptionIcon /> },
 ];
 
-export default function Sidebar() {
-  return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: drawerWidth,
-          boxSizing: "border-box",
-          bgcolor: "#17233a",
-          color: "white",
-          borderRight: "1px solid rgba(255,255,255,0.08)",
-        },
-      }}
-    >
-      <Toolbar />
+interface SidebarProps {
+  mobileOpen: boolean;
+  onClose: () => void;
+}
 
+export default function Sidebar({ mobileOpen, onClose }: SidebarProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const drawerContent = (
+    <>
+      <Toolbar />
       <Box sx={{ px: 3, pb: 2 }}>
         <Typography
           variant="h6"
@@ -69,7 +63,6 @@ export default function Sidebar() {
           PIP AI Platform
         </Typography>
       </Box>
-
       <List sx={{ px: 1 }}>
         {menuItems.map((item) => (
           <ListItemButton
@@ -77,6 +70,7 @@ export default function Sidebar() {
             component={NavLink}
             to={item.path}
             end={item.path === "/"}
+            onClick={isMobile ? onClose : undefined}
             sx={{
               borderRadius: 2,
               mb: 1,
@@ -97,11 +91,47 @@ export default function Sidebar() {
             >
               {item.icon}
             </ListItemIcon>
-
             <ListItemText primary={item.text} />
           </ListItemButton>
         ))}
       </List>
+    </>
+  );
+
+  const paperSx = {
+    width: drawerWidth,
+    boxSizing: "border-box" as const,
+    bgcolor: "#17233a",
+    color: "white",
+    borderRight: "1px solid rgba(255,255,255,0.08)",
+  };
+
+  if (isMobile) {
+    return (
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={onClose}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          "& .MuiDrawer-paper": paperSx,
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+    );
+  }
+
+  return (
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": paperSx,
+      }}
+    >
+      {drawerContent}
     </Drawer>
   );
 }

@@ -7,43 +7,57 @@ import {
   IconButton,
   Badge,
 } from "@mui/material";
-
+import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
-
 import ProjectSelector from "./ProjectSelector";
 
 const drawerWidth = 260;
 
-export default function Topbar() {
+interface TopbarProps {
+  onMenuClick: () => void;
+}
+
+export default function Topbar({ onMenuClick }: TopbarProps) {
   return (
     <AppBar
       position="fixed"
       elevation={1}
       sx={{
-        width: `calc(100% - ${drawerWidth}px)`,
-        ml: `${drawerWidth}px`,
+        width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
+        ml: { xs: 0, md: `${drawerWidth}px` },
         bgcolor: "#17233a",
         color: "white",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ gap: { xs: 1, sm: 2 } }}>
+        <IconButton
+          color="inherit"
+          edge="start"
+          onClick={onMenuClick}
+          sx={{ display: { xs: "inline-flex", md: "none" } }}
+        >
+          <MenuIcon />
+        </IconButton>
+
         <Typography
           variant="h6"
+          noWrap
           sx={{
             fontWeight: "bold",
+            display: { xs: "none", sm: "block" },
           }}
         >
           Project Intelligence
         </Typography>
 
-        <Box sx={{ width: 30 }} />
+        <Box sx={{ width: 30, display: { xs: "none", sm: "block" } }} />
 
         <Box
           sx={{
             width: 300,
-            display: "flex",
+            display: { xs: "none", md: "flex" },
             alignItems: "center",
             bgcolor: "white",
             borderRadius: 2,
@@ -53,31 +67,27 @@ export default function Topbar() {
           }}
         >
           <SearchIcon sx={{ mr: 1 }} />
-
           <Typography variant="body2">
             Search...
           </Typography>
         </Box>
 
         <ProjectSelector />
-
         <Box sx={{ flexGrow: 1 }} />
-
         <IconButton color="inherit">
           <Badge badgeContent={2} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>
-
         <Typography
           sx={{
             mx: 2,
             fontWeight: 600,
+            display: { xs: "none", sm: "block" },
           }}
         >
           Farzad
         </Typography>
-
         <Avatar sx={{ bgcolor: "primary.main" }}>
           F
         </Avatar>
