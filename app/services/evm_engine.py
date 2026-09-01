@@ -7,7 +7,11 @@ The engine never writes to the database.
 Standard EVM relationships used here:
 
     PV   = BAC * planned_progress / 100
-    EV   = BAC * actual_progress  / 100
+    EV   = BAC * actual_progress  / 100   (unless a real earned_value
+                                            figure was aggregated from
+                                            an uploaded cost-loaded
+                                            schedule, in which case that
+                                            real figure is used instead)
     SV   = EV - PV        SPI = EV / PV        (guard: PV > 0)
     CV   = EV - AC        CPI = EV / AC        (guard: AC > 0)
     EAC  = BAC / CPI      ETC = EAC - AC       VAC = BAC - EAC
@@ -76,6 +80,7 @@ def compute_evm(
     budget: float | None,
     actual_cost: float | None = None,
     budget_source: str = "project_costs",
+    earned_value_override: float | None = None,
 ) -> dict[str, Any]:
     """Compute the EVM bundle for a project.
 
@@ -84,6 +89,11 @@ def compute_evm(
     :param budget: Budget At Completion (BAC). ``None`` when unknown.
     :param actual_cost: Actual Cost (AC) entered so far.
     :param budget_source: provenance of the budget value.
+    :param earned_value_override: when a real Earned Value figure is
+        available (e.g. summed directly from a cost-loaded schedule's
+        "Earned Value" / BCWP column), it is used verbatim instead of
+        approximating EV from schedule progress percentage. Pass
+        ``None`` (default) to keep the progress-based approximation.
     """
 
     planned_pct, actual_pct = _weighted_mix(schedule_data)
@@ -116,7 +126,11 @@ def compute_evm(
     ac = float(actual_cost or 0.0)
 
     pv = bac * planned_pct / 100.0
-    ev = bac * actual_pct / 100.0
+
+    if earned_value_override is not None:
+        ev = float(earned_value_override)
+    else:
+        ev = bac * actual_pct / 100.0
 
     sv = round(ev - pv, 2)
     spi = round(ev / pv, 4) if pv > 0 else None

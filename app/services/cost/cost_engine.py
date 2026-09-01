@@ -53,12 +53,21 @@ def calculate_cost_kpis(
         or []
     )
 
+    # When the auto-detected snapshot came from real per-activity
+    # Earned Value figures in the workbook (not merely a budgeted/actual
+    # cost pair), that real EV should drive SPI/CPI/EAC instead of the
+    # progress-based approximation.
+    earned_value_override = None
+
     if auto_cost is not None:
 
         planned_cost = auto_cost.planned_cost or 0
         actual_cost = auto_cost.actual_cost or 0
         earned_value = auto_cost.earned_value or 0
         cost_source = "schedule_import"
+
+        if earned_value:
+            earned_value_override = earned_value
 
     else:
 
@@ -78,6 +87,9 @@ def calculate_cost_kpis(
         )
 
         cost_source = "manual" if manual_costs else None
+
+        if earned_value:
+            earned_value_override = earned_value
 
     if (
         auto_cost is None
@@ -147,11 +159,16 @@ def calculate_cost_kpis(
 
             budget_source = "contract_value"
 
+            # A contract-value-derived budget has no matching real EV
+            # figure; always fall back to the progress-based estimate.
+            earned_value_override = None
+
     evm = compute_evm(
         schedule_data,
         budget,
         actual_cost=actual_cost,
         budget_source=budget_source,
+        earned_value_override=earned_value_override,
     )
 
     return {
