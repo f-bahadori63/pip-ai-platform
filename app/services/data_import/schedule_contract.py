@@ -392,8 +392,6 @@ SCHEDULE_CONTRACT: dict[str, dict] = {
             "date",
         ],
     },
-}
-
     "budgeted_cost": {
         "required": False,
         "type": "float",
@@ -497,6 +495,8 @@ SCHEDULE_CONTRACT: dict[str, dict] = {
             "date",
         ],
     },
+
+}
 
 
 REQUIRED_FIELDS: list[str] = [
