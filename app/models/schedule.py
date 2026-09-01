@@ -68,6 +68,25 @@ class ScheduleActivity(Base):
         nullable=True
     )
 
+    # Optional cost-loaded-schedule fields. Populated automatically when
+    # the uploaded Excel workbook contains matching financial columns
+    # (e.g. "Budgeted Cost" / BCWS, "Actual Cost" / ACWP, "Earned Value" /
+    # BCWP). Left NULL when the schedule has no financial data.
+    budgeted_cost = Column(
+        Float,
+        nullable=True
+    )
+
+    actual_cost = Column(
+        Float,
+        nullable=True
+    )
+
+    earned_value = Column(
+        Float,
+        nullable=True
+    )
+
     created_at = Column(
         DateTime,
         default=datetime.utcnow

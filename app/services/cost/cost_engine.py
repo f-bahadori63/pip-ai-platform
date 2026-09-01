@@ -11,10 +11,29 @@ def calculate_cost_kpis(
     project_id: int
 ):
 
-    costs = (
+    # --------------------------------------------------------------
+    # Cost data priority:
+    #   1. Auto-detected from an uploaded cost-loaded schedule
+    #      (source="schedule_import") - most current & granular.
+    #   2. Manually entered snapshots (source="manual"), summed.
+    #   3. Fall back to the project's contract_value as an estimated
+    #      budget, driven purely by schedule progress.
+    # --------------------------------------------------------------
+
+    auto_cost = (
         db.query(ProjectCost)
         .filter(
-            ProjectCost.project_id == project_id
+            ProjectCost.project_id == project_id,
+            ProjectCost.source == "schedule_import",
+        )
+        .first()
+    )
+
+    manual_costs = (
+        db.query(ProjectCost)
+        .filter(
+            ProjectCost.project_id == project_id,
+            ProjectCost.source == "manual",
         )
         .all()
     )
@@ -34,22 +53,37 @@ def calculate_cost_kpis(
         or []
     )
 
-    planned_cost = sum(
-        c.planned_cost or 0
-        for c in costs
-    )
+    if auto_cost is not None:
 
-    actual_cost = sum(
-        c.actual_cost or 0
-        for c in costs
-    )
+        planned_cost = auto_cost.planned_cost or 0
+        actual_cost = auto_cost.actual_cost or 0
+        earned_value = auto_cost.earned_value or 0
+        cost_source = "schedule_import"
 
-    earned_value = sum(
-        c.earned_value or 0
-        for c in costs
-    )
+    else:
 
-    if not costs and not schedule_data:
+        planned_cost = sum(
+            c.planned_cost or 0
+            for c in manual_costs
+        )
+
+        actual_cost = sum(
+            c.actual_cost or 0
+            for c in manual_costs
+        )
+
+        earned_value = sum(
+            c.earned_value or 0
+            for c in manual_costs
+        )
+
+        cost_source = "manual" if manual_costs else None
+
+    if (
+        auto_cost is None
+        and not manual_costs
+        and not schedule_data
+    ):
 
         return {
             "cost_health": "UNKNOWN",
@@ -89,7 +123,13 @@ def calculate_cost_kpis(
         else None
     )
 
-    budget_source = "project_costs"
+    # Maps the internal cost row provenance to the label the EVM
+    # engine/UI use for "where did the budget number come from".
+    budget_source = {
+        "schedule_import": "schedule_import",
+        "manual": "project_costs",
+        None: "project_costs",
+    }[cost_source]
 
     if not budget:
 
@@ -127,6 +167,8 @@ def calculate_cost_kpis(
         "cost_variance": cost_variance,
 
         "cost_health": health,
+
+        "cost_source": cost_source,
 
         "evm": evm,
 

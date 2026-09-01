@@ -28,7 +28,9 @@ def create_cost(
 
         actual_cost=actual_cost,
 
-        earned_value=earned_value
+        earned_value=earned_value,
+
+        source="manual",
     )
 
 

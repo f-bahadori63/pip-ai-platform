@@ -126,6 +126,7 @@ interface CostData {
   remaining_cost: number;
   cost_variance: number;
   cost_health: string;
+  cost_source?: "schedule_import" | "manual" | null;
   evm?: EvmData;
   message?: string;
 }
@@ -381,10 +382,27 @@ export default function Cost() {
         sx={{ mb: 3, justifyContent: "space-between", alignItems: { xs: "flex-start", md: "center" } }}
       >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Cost Intelligence
-          </Typography>
-
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              Cost Intelligence
+            </Typography>
+ 
+            {cost?.cost_source === "schedule_import" && (
+              <Chip
+                size="small"
+                color="success"
+                label="Auto-detected from schedule upload"
+              />
+            )}
+            {cost?.cost_source === "manual" && (
+              <Chip
+                size="small"
+                color="default"
+                label="Manual entry"
+              />
+            )}
+          </Stack>
+ 
           <Typography color="text.secondary" sx={{ mt: 0.5 }}>
             Earned Value Management for the selected project
           </Typography>

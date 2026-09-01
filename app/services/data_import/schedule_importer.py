@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
+from app.models.cost.cost import ProjectCost
 from app.models.schedule import ScheduleActivity
 from app.services.data_import.schedule_normalizer import (
     normalize_schedule_excel,
@@ -9,6 +10,10 @@ from app.services.data_import.schedule_normalizer import (
 from app.services.wbs_import_service import (
     replace_project_wbs_from_schedule,
 )
+
+# Canonical financial fields that, when present in the uploaded
+# workbook, trigger automatic project-cost aggregation.
+COST_FIELDS = ("budgeted_cost", "actual_cost", "earned_value")
 
 
 def import_schedule_excel(
@@ -61,6 +66,16 @@ def import_schedule_excel(
                 "metadata": result.metadata,
             },
         }
+
+    # Which of the optional cost fields were actually mapped from a
+    # column in this workbook (as opposed to being absent entirely).
+    mapped_cost_fields = {
+        mapping.target_field
+        for mapping in result.mappings
+        if mapping.target_field in COST_FIELDS
+    }
+
+    cost_data_detected = bool(mapped_cost_fields)
 
     created_count = 0
     updated_count = 0
@@ -119,6 +134,9 @@ def import_schedule_excel(
                     responsible_party=row.get(
                         "responsible_party"
                     ),
+                    budgeted_cost=row.get("budgeted_cost"),
+                    actual_cost=row.get("actual_cost"),
+                    earned_value=row.get("earned_value"),
                 )
 
                 db.add(activity)
@@ -149,6 +167,9 @@ def import_schedule_excel(
                 activity.responsible_party = row.get(
                     "responsible_party"
                 )
+                activity.budgeted_cost = row.get("budgeted_cost")
+                activity.actual_cost = row.get("actual_cost")
+                activity.earned_value = row.get("earned_value")
 
                 updated_count += 1
 
@@ -204,6 +225,66 @@ def import_schedule_excel(
             normalized_rows=result.normalized_rows,
         )
 
+        # ============================================================
+        # AUTOMATIC COST AGGREGATION
+        # ============================================================
+        # If the uploaded workbook contained cost-loaded-schedule
+        # columns (budgeted_cost / actual_cost / earned_value), sum
+        # them across every currently-imported activity and upsert a
+        # single ProjectCost row tagged source="schedule_import".
+        #
+        # This row is idempotent: each successful upload with cost
+        # data REPLACES the previous auto-detected snapshot, it does
+        # not accumulate. Manually entered cost rows (source="manual")
+        # are never touched by this step.
+        # ============================================================
+
+        cost_summary = None
+
+        if cost_data_detected:
+
+            total_budgeted = sum(
+                (row.get("budgeted_cost") or 0)
+                for row in result.normalized_rows
+            )
+
+            total_actual = sum(
+                (row.get("actual_cost") or 0)
+                for row in result.normalized_rows
+            )
+
+            total_earned = sum(
+                (row.get("earned_value") or 0)
+                for row in result.normalized_rows
+            )
+
+            auto_cost_row = (
+                db.query(ProjectCost)
+                .filter(
+                    ProjectCost.project_id == project_id,
+                    ProjectCost.source == "schedule_import",
+                )
+                .first()
+            )
+
+            if auto_cost_row is None:
+                auto_cost_row = ProjectCost(
+                    project_id=project_id,
+                    source="schedule_import",
+                )
+                db.add(auto_cost_row)
+
+            auto_cost_row.planned_cost = total_budgeted
+            auto_cost_row.actual_cost = total_actual
+            auto_cost_row.earned_value = total_earned
+
+            cost_summary = {
+                "detected_fields": sorted(mapped_cost_fields),
+                "planned_cost": total_budgeted,
+                "actual_cost": total_actual,
+                "earned_value": total_earned,
+            }
+
         db.commit()
 
         return {
@@ -219,6 +300,8 @@ def import_schedule_excel(
                 result.normalized_rows
             ),
             "wbs": wbs_result,
+            "cost_auto_detected": cost_data_detected,
+            "cost_summary": cost_summary,
         }
 
     except Exception:
@@ -240,4 +323,3 @@ def normalize_and_import_schedule_excel(
         file_path=file_path,
         project_id=project_id,
     )
-
