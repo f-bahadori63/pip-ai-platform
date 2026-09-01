@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+﻿import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Box,
@@ -382,7 +382,7 @@ export default function Cost() {
         sx={{ mb: 3, justifyContent: "space-between", alignItems: { xs: "flex-start", md: "center" } }}
       >
         <Box>
-          <Stack direction="row" spacing={1.5} alignItems="center">
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
             <Typography variant="h4" sx={{ fontWeight: 700 }}>
               Cost Intelligence
             </Typography>
@@ -420,7 +420,7 @@ export default function Cost() {
           >
             <Typography variant="body2">
               {selectedProject.project_code
-                ? `${selectedProject.project_code} — `
+                ? `${selectedProject.project_code} â€” `
                 : ""}
               {selectedProject.name ?? `Project ${selectedProject.id}`}
               {" "}(ID: {selectedProject.id})
@@ -623,7 +623,7 @@ export default function Cost() {
               >
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 700, color: "white" }}>
-                    EVM — Earned Value Management
+                    EVM â€” Earned Value Management
                   </Typography>
                   <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
                     Computed automatically from schedule progress {cost.evm.budget_source === "contract_value" ? "and project contract value" : "and cost data"}
@@ -703,7 +703,7 @@ export default function Cost() {
           {analysis && (
             <Paper sx={{ mt: 3, p: 3, borderRadius: 3, boxShadow: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-                Management Intelligence — {analysis.project.code} / {analysis.project.name}
+                Management Intelligence â€” {analysis.project.code} / {analysis.project.name}
               </Typography>
 
               <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2 }}>
@@ -733,8 +733,8 @@ export default function Cost() {
 
               {analysis.evm?.status && (
                 <Alert severity={healthColor(analysis.evm.status) === "success" ? "success" : "warning"} sx={{ mb: 2 }}>
-                  EVM: SPI {analysis.evm.spi != null ? Number(analysis.evm.spi).toFixed(3) : "N/A"} ·
-                  CPI {analysis.evm.cpi != null ? Number(analysis.evm.cpi).toFixed(3) : "N/A"} ·
+                  EVM: SPI {analysis.evm.spi != null ? Number(analysis.evm.spi).toFixed(3) : "N/A"} آ·
+                  CPI {analysis.evm.cpi != null ? Number(analysis.evm.cpi).toFixed(3) : "N/A"} آ·
                   EAC {formatNumber(analysis.evm.eac ?? 0)}
                 </Alert>
               )}
