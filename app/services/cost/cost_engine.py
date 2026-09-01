@@ -1,9 +1,33 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.cost.cost import ProjectCost
 from app.models.project import Project
+from app.models.schedule import ScheduleActivity
 from app.services.ai.schedule_analyzer import analyze_project_schedule
 from app.services.evm_engine import compute_evm
+
+
+def _earned_value_column_was_present(
+    db: Session,
+    project_id: int,
+) -> bool:
+    """True when at least one schedule activity has a non-NULL
+    earned_value, meaning the uploaded workbook genuinely had an
+    Earned Value / BCWP column (even if its summed value is 0),
+    as opposed to no such column existing at all.
+    """
+
+    count = (
+        db.query(func.count(ScheduleActivity.id))
+        .filter(
+            ScheduleActivity.project_id == project_id,
+            ScheduleActivity.earned_value.isnot(None),
+        )
+        .scalar()
+    )
+
+    return bool(count)
 
 
 def calculate_cost_kpis(
@@ -53,10 +77,10 @@ def calculate_cost_kpis(
         or []
     )
 
-    # When the auto-detected snapshot came from real per-activity
-    # Earned Value figures in the workbook (not merely a budgeted/actual
+    # When the auto-detected snapshot came from a real per-activity
+    # Earned Value column in the workbook (not merely a budgeted/actual
     # cost pair), that real EV should drive SPI/CPI/EAC instead of the
-    # progress-based approximation.
+    # progress-based approximation - even when the real EV sums to 0.
     earned_value_override = None
 
     if auto_cost is not None:
@@ -66,7 +90,7 @@ def calculate_cost_kpis(
         earned_value = auto_cost.earned_value or 0
         cost_source = "schedule_import"
 
-        if earned_value:
+        if _earned_value_column_was_present(db, project_id):
             earned_value_override = earned_value
 
     else:
